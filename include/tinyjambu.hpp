@@ -47,8 +47,8 @@ constexpr uint32_t FRAMEBITS_CT = 0x50u;
 // == hex(7 << 4)
 constexpr uint32_t FRAMEBITS_TAG = 0x70u;
 
-// Initializes 128 -bit permutation state of TinyJambu-128 variant, using {128,
-// 192, 256} -bit secret key & 96 -bit public message nonce
+// Initializes 128 -bit permutation state using {128, 192, 256} -bit secret key
+// & 96 -bit public message nonce
 //
 // Note, this function expects that state is already zero-initialized !
 //
