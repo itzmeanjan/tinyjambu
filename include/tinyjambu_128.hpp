@@ -241,4 +241,23 @@ process_plain_text(
   }
 }
 
+// Finalization step, computing 64 -bit authentication tag for AEAD scheme
+//
+// See section 3.3.4 of TinyJambu specification
+// https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
+static inline void
+finalize(uint32_t* const __restrict state,     // 128 -bit state
+         const uint32_t* const __restrict key, // 128 -bit secret key
+         uint8_t* const __restrict tag         // 64 -bit authentication tag
+)
+{
+  state[1] = state[1] ^ FRAMEBITS_TAG;
+  state_update<1024ul>(state, key);
+  to_be_bytes(state[2], tag);
+
+  state[1] = state[1] ^ FRAMEBITS_TAG;
+  state_update<640ul>(state, key);
+  to_be_bytes(state[2], tag + 4);
+}
+
 }
