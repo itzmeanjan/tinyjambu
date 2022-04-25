@@ -1,8 +1,6 @@
 #pragma once
 #include "utils.hpp"
 
-using size_t = std::size_t;
-
 // TinyJambu-128 Authenticated Encryption with Associated Data Implementation
 namespace tinyjambu_128 {
 
@@ -102,9 +100,10 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
 // See section 3.3.1 of TinyJambu specification
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 static inline void
-initialize(uint32_t* const __restrict state,
-           const uint32_t* const __restrict key,
-           const uint8_t* const __restrict nonce)
+initialize(uint32_t* const __restrict state,     // 128 -bit state
+           const uint32_t* const __restrict key, // 128 -bit secret key
+           const uint8_t* const __restrict nonce // 96 -bit public message nonce
+)
 {
   // key setup
   state_update<1024ul>(state, key);
@@ -125,10 +124,12 @@ initialize(uint32_t* const __restrict state,
 // See section 3.3.2 of TinyJambu specification
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 static inline void
-process_associated_data(uint32_t* const __restrict state,
-                        const uint32_t* const __restrict key,
-                        const uint8_t* const __restrict data,
-                        const size_t data_len)
+process_associated_data(
+  uint32_t* const __restrict state,     // 128 -bit state
+  const uint32_t* const __restrict key, // 128 -bit secret key
+  const uint8_t* const __restrict data, // N -bytes of associated data
+  const size_t data_len                 // # -of associated data bytes
+)
 {
   const size_t full_blk_cnt = data_len >> 2;
 
@@ -159,6 +160,80 @@ process_associated_data(uint32_t* const __restrict state,
         state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 0]) << 24) ||
                     (static_cast<uint32_t>(data[partial_byte_off + 1]) << 16) ||
                     (static_cast<uint32_t>(data[partial_byte_off + 2]) << 8);
+        break;
+    }
+
+    state[1] = state[1] ^ static_cast<uint32_t>(partial_byte_cnt);
+  }
+}
+
+// Process N -many plain text bytes and computes equal number of cipher text
+// bytes, using TinyJambu-128 AEAD
+//
+// See section 3.3.3 of TinyJambu specification
+// https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
+static inline void
+process_plain_text(
+  uint32_t* const __restrict state,     // 128 -bit state
+  const uint32_t* const __restrict key, // 128 -bit secret key
+  const uint8_t* const __restrict text, // N -bytes plain text
+  uint8_t* const __restrict cipher,     // N -bytes cipher text ( output )
+  const size_t ct_len                   // # -of plain/ cipher text bytes
+)
+{
+  const size_t full_blk_cnt = ct_len >> 2;
+
+  for (size_t i = 0; i < full_blk_cnt; i++) {
+    state[1] = state[1] ^ FRAMEBITS_CT;
+    state_update<1024ul>(state, key);
+
+    const uint32_t msg = from_be_bytes(text + (i << 2));
+    state[3] = state[3] ^ msg;
+
+    const uint32_t enc = state[2] ^ msg;
+    to_be_bytes(enc, cipher + (i << 2));
+  }
+
+  // > 0 && < 4
+  const size_t partial_byte_cnt = ct_len & 3ul;
+
+  if (partial_byte_cnt > 0ul) {
+    const size_t partial_byte_off = ct_len - partial_byte_cnt;
+
+    state[1] = state[1] ^ FRAMEBITS_CT;
+    state_update<1024ul>(state, key);
+
+    uint32_t msg = 0u;
+    switch (partial_byte_cnt) {
+      case 1:
+        msg = (static_cast<uint32_t>(text[partial_byte_off + 0]) << 24);
+        break;
+      case 2:
+        msg = (static_cast<uint32_t>(text[partial_byte_off + 0]) << 24) ||
+              (static_cast<uint32_t>(text[partial_byte_off + 1]) << 16);
+        break;
+      case 3:
+        msg = (static_cast<uint32_t>(text[partial_byte_off + 0]) << 24) ||
+              (static_cast<uint32_t>(text[partial_byte_off + 1]) << 16) ||
+              (static_cast<uint32_t>(text[partial_byte_off + 2]) << 8);
+        break;
+    }
+    state[3] = state[3] ^ msg;
+
+    const uint32_t enc = state[2] ^ msg;
+
+    switch (partial_byte_cnt) {
+      case 1:
+        cipher[partial_byte_off + 0] = static_cast<uint8_t>(enc >> 24);
+        break;
+      case 2:
+        cipher[partial_byte_off + 0] = static_cast<uint8_t>(enc >> 24);
+        cipher[partial_byte_off + 1] = static_cast<uint8_t>(enc >> 16);
+        break;
+      case 3:
+        cipher[partial_byte_off + 0] = static_cast<uint8_t>(enc >> 24);
+        cipher[partial_byte_off + 1] = static_cast<uint8_t>(enc >> 16);
+        cipher[partial_byte_off + 2] = static_cast<uint8_t>(enc >> 8);
         break;
     }
 
