@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 
+// Given four consecutive big endian bytes, this function interprets them as 32
+// -bit unsigned integer
 static inline uint32_t
 from_be_bytes(const uint8_t* const bytes)
 {

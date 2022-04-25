@@ -117,4 +117,53 @@ initialize(uint32_t* const __restrict state,
   }
 }
 
+// Processing associated data such that first all full blocks ( each of size 32
+// -bits ) are mixed into state, then remaining partial data block ( bit length
+// of partial data block should be >= 8 && <= 24 | evenly divisible by 8 ) will
+// be mixed into permutation state
+//
+// See section 3.3.2 of TinyJambu specification
+// https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
+static inline void
+process_associated_data(uint32_t* const __restrict state,
+                        const uint32_t* const __restrict key,
+                        const uint8_t* const __restrict data,
+                        const size_t data_len)
+{
+  const size_t full_blk_cnt = data_len >> 2;
+
+  for (size_t i = 0; i < full_blk_cnt; i++) {
+    state[1] = state[1] ^ FRAMEBITS_AD;
+    state_update<640ul>(state, key);
+    state[3] = state[3] ^ from_be_bytes(data + (i << 2));
+  }
+
+  // > 0 && < 4
+  const size_t partial_byte_cnt = data_len & 3ul;
+
+  if (partial_byte_cnt > 0ul) {
+    const size_t partial_byte_off = data_len - partial_byte_cnt;
+
+    state[1] = state[1] ^ FRAMEBITS_AD;
+    state_update<640ul>(state, key);
+
+    switch (partial_byte_cnt) {
+      case 1:
+        state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 0]) << 24);
+        break;
+      case 2:
+        state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 0]) << 24) ||
+                    (static_cast<uint32_t>(data[partial_byte_off + 1]) << 16);
+        break;
+      case 3:
+        state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 0]) << 24) ||
+                    (static_cast<uint32_t>(data[partial_byte_off + 1]) << 16) ||
+                    (static_cast<uint32_t>(data[partial_byte_off + 2]) << 8);
+        break;
+    }
+
+    state[1] = state[1] ^ static_cast<uint32_t>(partial_byte_cnt);
+  }
+}
+
 }
