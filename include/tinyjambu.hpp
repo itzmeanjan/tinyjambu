@@ -47,8 +47,8 @@ constexpr uint32_t FRAMEBITS_CT = 0x50u;
 // == hex(7 << 4)
 constexpr uint32_t FRAMEBITS_TAG = 0x70u;
 
-// Initializes 128 -bit permutation state of TinyJambu-128 variant, using 128
-// -bit secret key & 96 -bit public message nonce
+// Initializes 128 -bit permutation state of TinyJambu-128 variant, using {128,
+// 192, 256} -bit secret key & 96 -bit public message nonce
 //
 // Note, this function expects that state is already zero-initialized !
 //
@@ -56,9 +56,10 @@ constexpr uint32_t FRAMEBITS_TAG = 0x70u;
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 template<const variant v>
 static inline void
-initialize(uint32_t* const __restrict state,     // 128 -bit state
-           const uint32_t* const __restrict key, // 128 -bit secret key
-           const uint8_t* const __restrict nonce // 96 -bit public message nonce
+initialize(
+  uint32_t* const __restrict state,     // 128 -bit state
+  const uint32_t* const __restrict key, // {128, 192, 256} -bit secret key
+  const uint8_t* const __restrict nonce // 96 -bit public message nonce
 )
 {
   // key setup
@@ -67,8 +68,10 @@ initialize(uint32_t* const __restrict state,     // 128 -bit state
       tinyjambu_128::state_update<1024ul>(state, key);
       break;
     case key_192:
+      tinyjambu_192::state_update<1152ul>(state, key);
       break;
     case key_256:
+      tinyjambu_256::state_update<1280ul>(state, key);
       break;
   }
 
@@ -80,8 +83,10 @@ initialize(uint32_t* const __restrict state,     // 128 -bit state
         tinyjambu_128::state_update<640ul>(state, key);
         break;
       case key_192:
+        tinyjambu_192::state_update<640ul>(state, key);
         break;
       case key_256:
+        tinyjambu_256::state_update<640ul>(state, key);
         break;
     }
     state[3] = state[3] ^ from_be_bytes(nonce + (i << 2));
@@ -99,7 +104,7 @@ template<const variant v>
 static inline void
 process_associated_data(
   uint32_t* const __restrict state,     // 128 -bit state
-  const uint32_t* const __restrict key, // 128 -bit secret key
+  const uint32_t* const __restrict key, // {128, 192, 256} -bit secret key
   const uint8_t* const __restrict data, // N -bytes of associated data
   const size_t data_len                 // # -of associated data bytes
 )
@@ -113,8 +118,10 @@ process_associated_data(
         tinyjambu_128::state_update<640ul>(state, key);
         break;
       case key_192:
+        tinyjambu_192::state_update<640ul>(state, key);
         break;
       case key_256:
+        tinyjambu_256::state_update<640ul>(state, key);
         break;
     }
     state[3] = state[3] ^ from_be_bytes(data + (i << 2));
@@ -132,8 +139,10 @@ process_associated_data(
         tinyjambu_128::state_update<640ul>(state, key);
         break;
       case key_192:
+        tinyjambu_192::state_update<640ul>(state, key);
         break;
       case key_256:
+        tinyjambu_256::state_update<640ul>(state, key);
         break;
     }
 
@@ -165,7 +174,7 @@ template<const variant v>
 static inline void
 process_plain_text(
   uint32_t* const __restrict state,     // 128 -bit state
-  const uint32_t* const __restrict key, // 128 -bit secret key
+  const uint32_t* const __restrict key, // {128, 192, 256} -bit secret key
   const uint8_t* const __restrict text, // N -bytes plain text
   uint8_t* const __restrict cipher,     // N -bytes cipher text ( output )
   const size_t ct_len                   // # -of plain/ cipher text bytes
@@ -180,8 +189,10 @@ process_plain_text(
         tinyjambu_128::state_update<1024ul>(state, key);
         break;
       case key_192:
+        tinyjambu_192::state_update<1152ul>(state, key);
         break;
       case key_256:
+        tinyjambu_256::state_update<1280ul>(state, key);
         break;
     }
 
@@ -204,8 +215,10 @@ process_plain_text(
         tinyjambu_128::state_update<1024ul>(state, key);
         break;
       case key_192:
+        tinyjambu_192::state_update<1152ul>(state, key);
         break;
       case key_256:
+        tinyjambu_256::state_update<1280ul>(state, key);
         break;
     }
 
@@ -265,7 +278,7 @@ template<const variant v>
 static inline void
 process_cipher_text(
   uint32_t* const __restrict state,       // 128 -bit state
-  const uint32_t* const __restrict key,   // 128 -bit secret key
+  const uint32_t* const __restrict key,   // {128, 192, 256} -bit secret key
   const uint8_t* const __restrict cipher, // N -bytes cipher text
   uint8_t* const __restrict text,         // N -bytes plain text ( output )
   const size_t ct_len                     // # -of cipher/ plain text bytes
@@ -280,8 +293,10 @@ process_cipher_text(
         tinyjambu_128::state_update<1024ul>(state, key);
         break;
       case key_192:
+        tinyjambu_192::state_update<1152ul>(state, key);
         break;
       case key_256:
+        tinyjambu_256::state_update<1280ul>(state, key);
         break;
     }
 
@@ -304,8 +319,10 @@ process_cipher_text(
         tinyjambu_128::state_update<1024ul>(state, key);
         break;
       case key_192:
+        tinyjambu_192::state_update<1152ul>(state, key);
         break;
       case key_256:
+        tinyjambu_256::state_update<1280ul>(state, key);
         break;
     }
 
@@ -361,9 +378,10 @@ process_cipher_text(
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 template<const variant v>
 static inline void
-finalize(uint32_t* const __restrict state,     // 128 -bit state
-         const uint32_t* const __restrict key, // 128 -bit secret key
-         uint8_t* const __restrict tag         // 64 -bit authentication tag
+finalize(
+  uint32_t* const __restrict state,     // 128 -bit state
+  const uint32_t* const __restrict key, // {128, 192, 256} -bit secret key
+  uint8_t* const __restrict tag         // 64 -bit authentication tag
 )
 {
   state[1] = state[1] ^ FRAMEBITS_TAG;
@@ -372,8 +390,10 @@ finalize(uint32_t* const __restrict state,     // 128 -bit state
       tinyjambu_128::state_update<1024ul>(state, key);
       break;
     case key_192:
+      tinyjambu_192::state_update<1152ul>(state, key);
       break;
     case key_256:
+      tinyjambu_256::state_update<1280ul>(state, key);
       break;
   }
   to_be_bytes(state[2], tag);
@@ -384,8 +404,10 @@ finalize(uint32_t* const __restrict state,     // 128 -bit state
       tinyjambu_128::state_update<640ul>(state, key);
       break;
     case key_192:
+      tinyjambu_192::state_update<640ul>(state, key);
       break;
     case key_256:
+      tinyjambu_256::state_update<640ul>(state, key);
       break;
   }
   to_be_bytes(state[2], tag + 4);
