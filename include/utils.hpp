@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <random>
 
 using size_t = std::size_t;
 
@@ -24,5 +25,18 @@ to_be_bytes(const uint32_t word, uint8_t* const bytes)
 #endif
   for (size_t i = 0; i < 4; i++) {
     bytes[i] = static_cast<uint8_t>(word >> ((3 - i) << 3));
+  }
+}
+
+// Generate N -many random bytes from available random device
+static inline void
+random_data(uint8_t* const data, const size_t dt_len)
+{
+  std::random_device rd;
+  std::mt19937_64 gen(rd());
+  std::uniform_int_distribution<uint8_t> dis;
+
+  for (size_t i = 0; i < dt_len; i++) {
+    data[i] = dis(gen);
   }
 }
