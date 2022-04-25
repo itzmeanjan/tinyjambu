@@ -6,9 +6,16 @@ using size_t = std::size_t;
 // TinyJambu-128 Authenticated Encryption with Associated Data Implementation
 namespace tinyjambu_128 {
 
-// TinyJambu `StateUpdate` function, specifically written for TinyJambu-128
-// variant, computing 128 feedback bits during each iteration ( see inside body
-// of for loop )
+// Compile time check to ensure that 128 feedback bits can be computed per
+// iteration round in following `state_update` function(s)
+constexpr bool
+check_rounds(const size_t rounds)
+{
+  return (rounds & 127ul) == 0ul;
+}
+
+// TinyJambu-128 `StateUpdate` function, computing 128 feedback bits during each
+// iteration ( see inside body of for loop )
 //
 // Note, this function will update state of 128 -bit Non-Linear Feedback Shift
 // Register `rounds` -many time; so ensure that
@@ -21,7 +28,7 @@ template<const size_t rounds>
 static inline void
 state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
              const uint32_t* const __restrict key // 128 -bit secret key
-)
+             ) requires(check_rounds(rounds))
 {
   const size_t itr_cnt = rounds >> 7;
 

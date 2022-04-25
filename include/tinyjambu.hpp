@@ -1,5 +1,5 @@
 #pragma once
-#include "tinyjambu_128.hpp"
+#include "permute.hpp"
 #include "utils.hpp"
 
 // Commonly used routines in TinyJambu-{128, 192, 256} Authenticated Encryption
