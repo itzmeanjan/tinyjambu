@@ -1,19 +1,19 @@
-#include "tinyjambu_128.hpp"
+#include "tinyjambu_256.hpp"
 #include <cassert>
 #include <iostream>
 #include <string.h>
 
-// Example demontrating how to use TinyJambu-128 AEAD C++20 header-only
+// Example demontrating how to use TinyJambu-256 AEAD C++20 header-only
 // library API.
 //
 // Compile with
 //
-// g++ -Wall -std=c++20 -O3 -I ./include example/tinyjambu_128.cpp
+// g++ -Wall -std=c++20 -O3 -I ./include example/tinyjambu_256.cpp
 int
 main()
 {
-  // 128 -bit secret key
-  constexpr size_t k_len = 16ul;
+  // 256 -bit secret key
+  constexpr size_t k_len = 32ul;
   // 96 -bit public message nonce
   constexpr size_t n_len = 12ul;
   // 64 -bit authentication tag
@@ -52,7 +52,7 @@ main()
   memset(enc, 0, ct_len);
   memset(dec, 0, ct_len);
 
-  using namespace tinyjambu_128;
+  using namespace tinyjambu_256;
 
   // authenticated encryption
   encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
@@ -68,7 +68,7 @@ main()
     assert(text[i] == dec[i]);
   }
 
-  std::cout << "TinyJambu-128 AEAD" << std::endl << std::endl;
+  std::cout << "TinyJambu-256 AEAD" << std::endl << std::endl;
   std::cout << "key         : " << to_hex(key, k_len) << std::endl;
   std::cout << "nonce       : " << to_hex(nonce, n_len) << std::endl;
   std::cout << "text        : " << to_hex(text, ct_len) << std::endl;
