@@ -233,3 +233,12 @@ tinyjambu_256_decrypt_4096B_32B     137634 ns       137631 ns         5088 bytes
 
 > Not mentioning any value for `FBK` parameter, results in setting `FBK=32` !
 
+## Usage
+
+`tinyjambu` being a simple, zero-dependency, header-only C++ library, it's pretty easy to start using it. Just add `./include` path while compiling your program ( inform your compiler about this include path using `-I ./include` syntax ), which uses `tinyjambu`.
+
+I've written following example programs which demonstrate use of TinyJambu-{128, 192, 256} C++ API
+
+- [TinyJambu-128](https://github.com/itzmeanjan/tinyjambu/blob/dc631cd/example/tinyjambu_128.cpp)
+- [TinyJambu-193](https://github.com/itzmeanjan/tinyjambu/blob/dc631cd/example/tinyjambu_193.cpp)
+- [TinyJambu-256](https://github.com/itzmeanjan/tinyjambu/blob/dc631cd/example/tinyjambu_256.cpp)
