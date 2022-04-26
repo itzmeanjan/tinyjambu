@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
+#include <iomanip>
 #include <random>
+#include <sstream>
 
 using size_t = std::size_t;
 
@@ -39,4 +41,21 @@ random_data(uint8_t* const data, const size_t dt_len)
   for (size_t i = 0; i < dt_len; i++) {
     data[i] = dis(gen);
   }
+}
+
+// Given byte array of length N, this function converts that into hex
+// representation
+//
+// Taken from
+// https://github.com/itzmeanjan/ascon/blob/6050ca9/include/utils.hpp#L325-L336
+static inline const std::string
+to_hex(const uint8_t* const bytes, const size_t len)
+{
+  std::stringstream ss;
+  ss << std::hex;
+
+  for (size_t i = 0; i < len; i++) {
+    ss << std::setw(2) << std::setfill('0') << static_cast<uint32_t>(bytes[i]);
+  }
+  return ss.str();
 }
