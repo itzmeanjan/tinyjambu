@@ -23,8 +23,8 @@ encrypt(const uint8_t* const __restrict key,   // 192 -bit secret key
   using namespace tinyjambu;
 
   // note permutation state must be zero initialized !
-  uint32_t state[6] = { 0u };
-  uint32_t key_[4] = { 0u };
+  uint32_t state[4] = { 0u };
+  uint32_t key_[6] = { 0u };
 
 #if defined __clang__
 #pragma unroll 6
@@ -61,8 +61,8 @@ decrypt(const uint8_t* const __restrict key,    // 192 -bit secret key
   using namespace tinyjambu;
 
   // note permutation state must be zero initialized !
-  uint32_t state[6] = { 0u };
-  uint32_t key_[4] = { 0u };
+  uint32_t state[4] = { 0u };
+  uint32_t key_[6] = { 0u };
   uint8_t tag_[8] = { 0u };
 
 #if defined __clang__
