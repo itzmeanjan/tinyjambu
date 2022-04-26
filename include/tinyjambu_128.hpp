@@ -30,7 +30,7 @@ encrypt(const uint8_t* const __restrict key,   // 128 -bit secret key
 #pragma unroll 4
 #endif
   for (size_t i = 0; i < 4; i++) {
-    key_[i] = from_be_bytes(key + (i << 2));
+    key_[i] = from_le_bytes(key + (i << 2));
   }
 
   initialize<key_128>(state, key_, nonce);
@@ -69,7 +69,7 @@ decrypt(const uint8_t* const __restrict key,    // 128 -bit secret key
 #pragma unroll 4
 #endif
   for (size_t i = 0; i < 4; i++) {
-    key_[i] = from_be_bytes(key + (i << 2));
+    key_[i] = from_le_bytes(key + (i << 2));
   }
 
   initialize<key_128>(state, key_, nonce);

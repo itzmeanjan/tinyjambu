@@ -89,7 +89,7 @@ initialize(
         tinyjambu_256::state_update<640ul>(state, key);
         break;
     }
-    state[3] = state[3] ^ from_be_bytes(nonce + (i << 2));
+    state[3] = state[3] ^ from_le_bytes(nonce + (i << 2));
   }
 }
 
@@ -124,7 +124,7 @@ process_associated_data(
         tinyjambu_256::state_update<640ul>(state, key);
         break;
     }
-    state[3] = state[3] ^ from_be_bytes(data + (i << 2));
+    state[3] = state[3] ^ from_le_bytes(data + (i << 2));
   }
 
   // > 0 && < 4
@@ -148,16 +148,16 @@ process_associated_data(
 
     switch (partial_byte_cnt) {
       case 1:
-        state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 0]) << 24);
+        state[3] ^= static_cast<uint32_t>(data[partial_byte_off + 0]);
         break;
       case 2:
-        state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 0]) << 24) ||
-                    (static_cast<uint32_t>(data[partial_byte_off + 1]) << 16);
+        state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 1]) << 8) |
+                    (static_cast<uint32_t>(data[partial_byte_off + 0]) << 0);
         break;
       case 3:
-        state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 0]) << 24) ||
-                    (static_cast<uint32_t>(data[partial_byte_off + 1]) << 16) ||
-                    (static_cast<uint32_t>(data[partial_byte_off + 2]) << 8);
+        state[3] ^= (static_cast<uint32_t>(data[partial_byte_off + 2]) << 16) |
+                    (static_cast<uint32_t>(data[partial_byte_off + 1]) << 8) |
+                    (static_cast<uint32_t>(data[partial_byte_off + 0]) << 0);
         break;
     }
 
@@ -196,11 +196,11 @@ process_plain_text(
         break;
     }
 
-    const uint32_t msg = from_be_bytes(text + (i << 2));
+    const uint32_t msg = from_le_bytes(text + (i << 2));
     state[3] = state[3] ^ msg;
 
     const uint32_t enc = state[2] ^ msg;
-    to_be_bytes(enc, cipher + (i << 2));
+    to_le_bytes(enc, cipher + (i << 2));
   }
 
   // > 0 && < 4
@@ -225,16 +225,16 @@ process_plain_text(
     uint32_t msg = 0u;
     switch (partial_byte_cnt) {
       case 1:
-        msg = (static_cast<uint32_t>(text[partial_byte_off + 0]) << 24);
+        msg = static_cast<uint32_t>(text[partial_byte_off + 0]);
         break;
       case 2:
-        msg = (static_cast<uint32_t>(text[partial_byte_off + 0]) << 24) ||
-              (static_cast<uint32_t>(text[partial_byte_off + 1]) << 16);
+        msg = (static_cast<uint32_t>(text[partial_byte_off + 1]) << 8) |
+              (static_cast<uint32_t>(text[partial_byte_off + 0]) << 0);
         break;
       case 3:
-        msg = (static_cast<uint32_t>(text[partial_byte_off + 0]) << 24) ||
-              (static_cast<uint32_t>(text[partial_byte_off + 1]) << 16) ||
-              (static_cast<uint32_t>(text[partial_byte_off + 2]) << 8);
+        msg = (static_cast<uint32_t>(text[partial_byte_off + 2]) << 16) |
+              (static_cast<uint32_t>(text[partial_byte_off + 1]) << 8) |
+              (static_cast<uint32_t>(text[partial_byte_off + 0]) << 0);
         break;
     }
     state[3] = state[3] ^ msg;
@@ -243,14 +243,14 @@ process_plain_text(
 
     switch (partial_byte_cnt) {
       case 1:
-        cipher[partial_byte_off + 0] = static_cast<uint8_t>(enc >> 24);
+        cipher[partial_byte_off + 0] = static_cast<uint8_t>(enc);
         break;
       case 2:
 #if defined __clang__
 #pragma unroll 2
 #endif
         for (size_t i = 0; i < 2; i++) {
-          const uint8_t b = static_cast<uint8_t>(enc >> ((3 - i) << 3));
+          const uint8_t b = static_cast<uint8_t>(enc >> (i << 3));
           cipher[partial_byte_off + i] = b;
         }
         break;
@@ -259,7 +259,7 @@ process_plain_text(
 #pragma unroll 3
 #endif
         for (size_t i = 0; i < 3; i++) {
-          const uint8_t b = static_cast<uint8_t>(enc >> ((3 - i) << 3));
+          const uint8_t b = static_cast<uint8_t>(enc >> (i << 3));
           cipher[partial_byte_off + i] = b;
         }
         break;
@@ -300,11 +300,11 @@ process_cipher_text(
         break;
     }
 
-    const uint32_t enc = from_be_bytes(cipher + (i << 2));
+    const uint32_t enc = from_le_bytes(cipher + (i << 2));
     const uint32_t dec = state[2] ^ enc;
 
     state[3] = state[3] ^ dec;
-    to_be_bytes(dec, text + (i << 2));
+    to_le_bytes(dec, text + (i << 2));
   }
 
   // > 0 && < 4
@@ -329,31 +329,46 @@ process_cipher_text(
     uint32_t enc = 0u;
     switch (partial_byte_cnt) {
       case 1:
-        enc = (static_cast<uint32_t>(cipher[partial_byte_off + 0]) << 24);
+        enc = static_cast<uint32_t>(cipher[partial_byte_off + 0]);
         break;
       case 2:
-        enc = (static_cast<uint32_t>(cipher[partial_byte_off + 0]) << 24) ||
-              (static_cast<uint32_t>(cipher[partial_byte_off + 1]) << 16);
+        enc = (static_cast<uint32_t>(cipher[partial_byte_off + 1]) << 8) |
+              (static_cast<uint32_t>(cipher[partial_byte_off + 0]) << 0);
         break;
       case 3:
-        enc = (static_cast<uint32_t>(cipher[partial_byte_off + 0]) << 24) ||
-              (static_cast<uint32_t>(cipher[partial_byte_off + 1]) << 16) ||
-              (static_cast<uint32_t>(cipher[partial_byte_off + 2]) << 8);
+        enc = (static_cast<uint32_t>(cipher[partial_byte_off + 2]) << 16) |
+              (static_cast<uint32_t>(cipher[partial_byte_off + 1]) << 8) |
+              (static_cast<uint32_t>(cipher[partial_byte_off + 0]) << 0);
         break;
     }
+
+    // only enable those bits ( from LSB side of 32 -bit word ) which are
+    // carrying decrypted bits
+    //
+    // note, decrypted bit count always divisible by 8 && ∈ [8..24]
     const uint32_t dec = state[2] ^ enc;
-    state[3] = state[3] ^ dec;
+    switch (partial_byte_cnt) {
+      case 1:
+        state[3] = state[3] ^ (dec & 0xffu);
+        break;
+      case 2:
+        state[3] = state[3] ^ (dec & 0xffffu);
+        break;
+      case 3:
+        state[3] = state[3] ^ (dec & 0xffffffu);
+        break;
+    }
 
     switch (partial_byte_cnt) {
       case 1:
-        text[partial_byte_off + 0] = static_cast<uint8_t>(dec >> 24);
+        text[partial_byte_off + 0] = static_cast<uint8_t>(dec);
         break;
       case 2:
 #if defined __clang__
 #pragma unroll 2
 #endif
         for (size_t i = 0; i < 2; i++) {
-          const uint8_t b = static_cast<uint8_t>(dec >> ((3 - i) << 3));
+          const uint8_t b = static_cast<uint8_t>(dec >> (i << 3));
           text[partial_byte_off + i] = b;
         }
         break;
@@ -362,7 +377,7 @@ process_cipher_text(
 #pragma unroll 3
 #endif
         for (size_t i = 0; i < 3; i++) {
-          const uint8_t b = static_cast<uint8_t>(dec >> ((3 - i) << 3));
+          const uint8_t b = static_cast<uint8_t>(dec >> (i << 3));
           text[partial_byte_off + i] = b;
         }
         break;
@@ -396,7 +411,7 @@ finalize(
       tinyjambu_256::state_update<1280ul>(state, key);
       break;
   }
-  to_be_bytes(state[2], tag);
+  to_le_bytes(state[2], tag);
 
   state[1] = state[1] ^ FRAMEBITS_TAG;
   switch (v) {
@@ -410,7 +425,7 @@ finalize(
       tinyjambu_256::state_update<640ul>(state, key);
       break;
   }
-  to_be_bytes(state[2], tag + 4);
+  to_le_bytes(state[2], tag + 4);
 }
 
 }
