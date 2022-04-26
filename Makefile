@@ -3,10 +3,25 @@ CXXFLAGS = -std=c++20 -Wall -Weverything -Wno-c++98-compat -Wno-c++98-c++11-comp
 OPTFLAGS = -O3
 IFLAGS = -I ./include
 
+# Consider launching all make recipes as shown in following example
+#
+# `FBK=32 make` // computes 32 feedback bits in-parallel
+#
+# or
+#
+# `FBK=128 make` // computes 128 feedback bits in-parallel
+#
+# Note :
+#
+# - If none defined, default choice `FBK_32` is passed !
+# - If one attempts to do `FBK=187 make`, which is not supported bitwidth,
+#   default choice `FBK_32` to be used
+DFBK = -DFBK_$(or $(FBK),32)
+
 all: test_tinyjambu
 
 test/a.out: test/main.cpp include/*.hpp
-	$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(IFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(DFBK) $(IFLAGS) $< -o $@
 
 test_tinyjambu: test/a.out
 	./$<
@@ -20,7 +35,7 @@ format:
 bench/a.out: bench/main.cpp include/*.hpp
 	# make sure you've google-benchmark globally installed
 	# see https://github.com/google/benchmark/tree/60b16f1#installation
-	$(CXX) $(CXXFLAGS) -Wno-global-constructors $(OPTFLAGS) $(IFLAGS) $< -lbenchmark -lpthread -o $@
+	$(CXX) $(CXXFLAGS) -Wno-global-constructors $(OPTFLAGS) $(DFBK) $(IFLAGS) $< -lbenchmark -lpthread -o $@
 
 benchmark: bench/a.out
 	./$<
