@@ -1,14 +1,16 @@
 #pragma once
+#include "test.hpp"
 #include "tinyjambu_192.hpp"
 #include <cassert>
 
-// Test functional correctness of TinyJambu-{128, 192, 256} AEAD Implementation
 namespace test_tinyjambu {
 
 // Test TinyJambu-192 AEAD Implementation by executing encrypt -> decrypt ->
-// compare, on randomly generated input bytes
+// compare, on randomly generated input bytes, while also mutating ( a single
+// bit flip ) decrypt routine input set to show that AEAD scheme works as
+// expected
 static inline void
-key_192(const size_t dt_len, const size_t ct_len)
+key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
 {
   uint8_t* key = static_cast<uint8_t*>(std::malloc(24u));
   uint8_t* nonce = static_cast<uint8_t*>(std::malloc(12u));
@@ -26,15 +28,83 @@ key_192(const size_t dt_len, const size_t ct_len)
   using namespace tinyjambu_192;
 
   encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
+
+  // Mutate ( single bit flip ), if possible !
+  switch (m) {
+    case mutate_t::key:
+      key[0] ^= static_cast<uint8_t>(1);
+      break;
+    case mutate_t::nonce:
+      nonce[0] ^= static_cast<uint8_t>(1);
+      break;
+    case mutate_t::tag:
+      tag[0] ^= static_cast<uint8_t>(1);
+      break;
+    case mutate_t::data:
+      if (dt_len > 0) {
+        data[0] ^= static_cast<uint8_t>(1);
+      }
+      break;
+    case mutate_t::enc:
+      if (ct_len > 0) {
+        enc[0] ^= static_cast<uint8_t>(1);
+      }
+      break;
+    case mutate_t::none:
+      // don't mutate anything --- ideal world !
+      break;
+  }
+
   const bool f = decrypt(key, nonce, tag, data, dt_len, enc, dec, ct_len);
 
   // authentication
-  assert(f);
+  switch (m) {
+    case mutate_t::key:
+      assert(!f);
+      break;
+    case mutate_t::nonce:
+      assert(!f);
+      break;
+    case mutate_t::tag:
+      assert(!f);
+      break;
+    case mutate_t::data:
+      if (dt_len > 0) {
+        assert(!f);
+      } else {
+        assert(f);
 
-  // byte-by-byte comparison to be sure that original plain text & decrypted
-  // plain text bytes are actually same !
-  for (size_t i = 0; i < ct_len; i++) {
-    assert(text[i] == dec[i]);
+        // byte-by-byte comparison to be sure that original plain text &
+        // decrypted
+        // plain text bytes are actually same !
+        for (size_t i = 0; i < ct_len; i++) {
+          assert(text[i] == dec[i]);
+        }
+      }
+      break;
+    case mutate_t::enc:
+      if (ct_len > 0) {
+        assert(!f);
+      } else {
+        assert(f);
+
+        // byte-by-byte comparison to be sure that original plain text &
+        // decrypted
+        // plain text bytes are actually same !
+        for (size_t i = 0; i < ct_len; i++) {
+          assert(text[i] == dec[i]);
+        }
+      }
+      break;
+    case mutate_t::none:
+      assert(f);
+
+      // byte-by-byte comparison to be sure that original plain text & decrypted
+      // plain text bytes are actually same !
+      for (size_t i = 0; i < ct_len; i++) {
+        assert(text[i] == dec[i]);
+      }
+      break;
   }
 
   std::free(key);
