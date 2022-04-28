@@ -38,7 +38,7 @@ While computing below as output
 - N -bytes decrypted data | N >= 0 && len(cipher) == len(text)
 - Boolean flag denoting success of verification
 
-Here I'm maintaining one easy to use, zero-dependency ( excluding C++20 standard library ), header-only C++ library, which implements all three variants of TinyJambu.
+Here I'm maintaining one easy to use, zero-dependency ( excluding C++20 standard library ), header-only C++ library, which implements all three variants of TinyJambu. I've also written Python interface for underlying C++ implementation, which one might want to use in their Python programs.
 
 > During implementation, I followed [this](https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf) specification of TinyJambu.
 
@@ -75,6 +75,56 @@ cmake version 3.22.1
 
 - For benchmarking TinyJambu-{128, 192, 256} on CPU -based systems, you'll need to have `google-benchmark` library globally installed; see [this](https://github.com/google/benchmark/tree/60b16f1#installation)
 
+- If you want to use/ test/ benchmark Python API, you need to have `python3`, along with some dependencies, which can be installed using `pip`.
+
+> I'm using
+
+```bash
+$ python3 --version
+
+Python 3.10.4
+```
+
+> For downloading Python API dependencies
+
+```bash
+pushd wrapper/python
+python3 -m pip install -r requirements.txt # given that you've pip installed !
+popd
+```
+
+> If `pip` is not yet installed
+
+```bash
+sudo apt-get install python3-pip
+```
+
+> But probably, you want to use `virtualenv` instead of polluting your global namespace. [ **Recommended** ]
+
+```bash
+# download virtualenv
+python3 -m pip install --user virtualenv
+
+pushd wrapper/python
+
+# create virtualenv work directory
+python3 -m virtualenv .
+# enable virtualenv
+source bin/activate # notice shell prompt change
+
+# download dependencies inside virtualenv
+python3 -m pip install -r requirements.txt
+
+# do whatever you want to do inside virtualenv workspace
+# ...
+# ...
+
+# disable virtualenv
+deactivate # notice shell prompt change
+
+popd
+```
+
 ## Testing
 
 For ensuring functional correctness of TinyJambu-{128, 192, 256} AEAD, I've written following test cases
@@ -102,6 +152,12 @@ FBK=128 make
 ```
 
 > You may safely skip specifying `FBK`, default choice `FBK=32` is automatically set !
+
+For testing using Known Answer Tests provided with NIST LWC submission of TinyJambu, issue
+
+```bash
+make test_kat
+```
 
 ## Benchmarking
 
@@ -222,6 +278,60 @@ tinyjambu_256_decrypt_4096B_32B     140386 ns       140327 ns         4977 bytes
 ```
 
 > Not mentioning any value for `FBK` parameter, results in setting `FBK=32` !
+
+For benchmarking Python API of `tinyjambu`, issue following command
+
+```bash
+FBK=32 make bench_python
+```
+
+```bash
+2022-04-28T12:57:04+05:30
+Running bench_tinyjambu.py
+Run on (4 X 1897.34 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 3072 KiB (x1)
+Load Average: 0.46, 0.45, 0.40
+----------------------------------------------------------------
+Benchmark                      Time             CPU   Iterations
+----------------------------------------------------------------
+tinyjambu_128_encrypt      60135 ns        60132 ns        11183
+tinyjambu_128_decrypt      59994 ns        59993 ns        11085
+tinyjambu_192_encrypt      60280 ns        60278 ns        11107
+tinyjambu_192_decrypt      63265 ns        63260 ns        11010
+tinyjambu_256_encrypt      62988 ns        62980 ns        10757
+tinyjambu_256_decrypt      60500 ns        60496 ns        10829
+```
+
+or when interested in computing 128 feedback bits each iteration
+
+```bash
+FBK=128 make bench_python
+```
+
+```bash
+2022-04-28T12:56:35+05:30
+Running bench_tinyjambu.py
+Run on (4 X 1895.73 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x2)
+  L1 Instruction 32 KiB (x2)
+  L2 Unified 256 KiB (x2)
+  L3 Unified 3072 KiB (x1)
+Load Average: 0.54, 0.46, 0.41
+----------------------------------------------------------------
+Benchmark                      Time             CPU   Iterations
+----------------------------------------------------------------
+tinyjambu_128_encrypt      70637 ns        70631 ns         9964
+tinyjambu_128_decrypt      67828 ns        67823 ns        10086
+tinyjambu_192_encrypt      68471 ns        68468 ns         9714
+tinyjambu_192_decrypt      68530 ns        68525 ns         9193
+tinyjambu_256_encrypt      69690 ns        69683 ns         9614
+tinyjambu_256_decrypt      76305 ns        76295 ns         9593
+```
 
 ## Usage
 

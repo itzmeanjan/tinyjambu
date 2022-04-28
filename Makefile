@@ -41,7 +41,11 @@ benchmark: bench/a.out
 	./$<
 
 lib:
-	$(CXX) $(CXXFLAGS) -Wno-unused-function $(OPTFLAGS) $(IFLAGS) -fPIC --shared wrapper/tinyjambu.cpp -o wrapper/libtinyjambu.so
+	$(CXX) $(CXXFLAGS) -Wno-unused-function $(OPTFLAGS) $(DFBK) $(IFLAGS) -fPIC --shared wrapper/tinyjambu.cpp -o wrapper/libtinyjambu.so
 
 test_kat:
 	bash test.sh
+
+bench_python:
+	make lib
+	cd wrapper/python; python3.10 bench_tinyjambu.py; cd ../..
