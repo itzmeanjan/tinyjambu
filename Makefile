@@ -27,7 +27,7 @@ test_tinyjambu: test/a.out
 	./$<
 
 clean:
-	find . -name '*.out' -o -name '*.o' | xargs rm -rf
+	find . -name '*.out' -o -name '*.o' -o -name '*.so' | xargs rm -rf
 
 format:
 	find . -name '*.cpp' -o -name '*.hpp' | xargs clang-format -i --style=Mozilla
@@ -39,3 +39,6 @@ bench/a.out: bench/main.cpp include/*.hpp
 
 benchmark: bench/a.out
 	./$<
+
+lib:
+	$(CXX) $(CXXFLAGS) -Wno-unused-function $(OPTFLAGS) $(IFLAGS) -fPIC --shared wrapper/tinyjambu.cpp -o wrapper/libtinyjambu.so
