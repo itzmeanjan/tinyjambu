@@ -63,32 +63,26 @@ initialize(
 )
 {
   // key setup
-  switch (v) {
-    case key_128:
-      tinyjambu_128::state_update<1024ul>(state, key);
-      break;
-    case key_192:
-      tinyjambu_192::state_update<1152ul>(state, key);
-      break;
-    case key_256:
-      tinyjambu_256::state_update<1280ul>(state, key);
-      break;
+  if constexpr (v == key_128) {
+    tinyjambu_128::state_update<1024ul>(state, key);
+  } else if constexpr (v == key_192) {
+    tinyjambu_192::state_update<1152ul>(state, key);
+  } else if constexpr (v == key_256) {
+    tinyjambu_256::state_update<1280ul>(state, key);
   }
 
   // nonce setup
   for (size_t i = 0; i < 3; i++) {
     state[1] = state[1] ^ FRAMEBITS_NONCE;
-    switch (v) {
-      case key_128:
-        tinyjambu_128::state_update<640ul>(state, key);
-        break;
-      case key_192:
-        tinyjambu_192::state_update<640ul>(state, key);
-        break;
-      case key_256:
-        tinyjambu_256::state_update<640ul>(state, key);
-        break;
+
+    if constexpr (v == key_128) {
+      tinyjambu_128::state_update<640ul>(state, key);
+    } else if constexpr (v == key_192) {
+      tinyjambu_192::state_update<640ul>(state, key);
+    } else if constexpr (v == key_256) {
+      tinyjambu_256::state_update<640ul>(state, key);
     }
+
     state[3] = state[3] ^ from_le_bytes(nonce + (i << 2));
   }
 }
@@ -113,17 +107,15 @@ process_associated_data(
 
   for (size_t i = 0; i < full_blk_cnt; i++) {
     state[1] = state[1] ^ FRAMEBITS_AD;
-    switch (v) {
-      case key_128:
-        tinyjambu_128::state_update<640ul>(state, key);
-        break;
-      case key_192:
-        tinyjambu_192::state_update<640ul>(state, key);
-        break;
-      case key_256:
-        tinyjambu_256::state_update<640ul>(state, key);
-        break;
+
+    if constexpr (v == key_128) {
+      tinyjambu_128::state_update<640ul>(state, key);
+    } else if constexpr (v == key_192) {
+      tinyjambu_192::state_update<640ul>(state, key);
+    } else if constexpr (v == key_256) {
+      tinyjambu_256::state_update<640ul>(state, key);
     }
+
     state[3] = state[3] ^ from_le_bytes(data + (i << 2));
   }
 
@@ -134,16 +126,13 @@ process_associated_data(
     const size_t partial_byte_off = data_len - partial_byte_cnt;
 
     state[1] = state[1] ^ FRAMEBITS_AD;
-    switch (v) {
-      case key_128:
-        tinyjambu_128::state_update<640ul>(state, key);
-        break;
-      case key_192:
-        tinyjambu_192::state_update<640ul>(state, key);
-        break;
-      case key_256:
-        tinyjambu_256::state_update<640ul>(state, key);
-        break;
+
+    if constexpr (v == key_128) {
+      tinyjambu_128::state_update<640ul>(state, key);
+    } else if constexpr (v == key_192) {
+      tinyjambu_192::state_update<640ul>(state, key);
+    } else if constexpr (v == key_256) {
+      tinyjambu_256::state_update<640ul>(state, key);
     }
 
     switch (partial_byte_cnt) {
@@ -184,16 +173,13 @@ process_plain_text(
 
   for (size_t i = 0; i < full_blk_cnt; i++) {
     state[1] = state[1] ^ FRAMEBITS_CT;
-    switch (v) {
-      case key_128:
-        tinyjambu_128::state_update<1024ul>(state, key);
-        break;
-      case key_192:
-        tinyjambu_192::state_update<1152ul>(state, key);
-        break;
-      case key_256:
-        tinyjambu_256::state_update<1280ul>(state, key);
-        break;
+
+    if constexpr (v == key_128) {
+      tinyjambu_128::state_update<1024ul>(state, key);
+    } else if constexpr (v == key_192) {
+      tinyjambu_192::state_update<1152ul>(state, key);
+    } else if constexpr (v == key_256) {
+      tinyjambu_256::state_update<1280ul>(state, key);
     }
 
     const uint32_t msg = from_le_bytes(text + (i << 2));
@@ -210,16 +196,13 @@ process_plain_text(
     const size_t partial_byte_off = ct_len - partial_byte_cnt;
 
     state[1] = state[1] ^ FRAMEBITS_CT;
-    switch (v) {
-      case key_128:
-        tinyjambu_128::state_update<1024ul>(state, key);
-        break;
-      case key_192:
-        tinyjambu_192::state_update<1152ul>(state, key);
-        break;
-      case key_256:
-        tinyjambu_256::state_update<1280ul>(state, key);
-        break;
+
+    if constexpr (v == key_128) {
+      tinyjambu_128::state_update<1024ul>(state, key);
+    } else if constexpr (v == key_192) {
+      tinyjambu_192::state_update<1152ul>(state, key);
+    } else if constexpr (v == key_256) {
+      tinyjambu_256::state_update<1280ul>(state, key);
     }
 
     uint32_t msg = 0u;
@@ -288,16 +271,13 @@ process_cipher_text(
 
   for (size_t i = 0; i < full_blk_cnt; i++) {
     state[1] = state[1] ^ FRAMEBITS_CT;
-    switch (v) {
-      case key_128:
-        tinyjambu_128::state_update<1024ul>(state, key);
-        break;
-      case key_192:
-        tinyjambu_192::state_update<1152ul>(state, key);
-        break;
-      case key_256:
-        tinyjambu_256::state_update<1280ul>(state, key);
-        break;
+
+    if constexpr (v == key_128) {
+      tinyjambu_128::state_update<1024ul>(state, key);
+    } else if constexpr (v == key_192) {
+      tinyjambu_192::state_update<1152ul>(state, key);
+    } else if constexpr (v == key_256) {
+      tinyjambu_256::state_update<1280ul>(state, key);
     }
 
     const uint32_t enc = from_le_bytes(cipher + (i << 2));
@@ -314,16 +294,13 @@ process_cipher_text(
     const size_t partial_byte_off = ct_len - partial_byte_cnt;
 
     state[1] = state[1] ^ FRAMEBITS_CT;
-    switch (v) {
-      case key_128:
-        tinyjambu_128::state_update<1024ul>(state, key);
-        break;
-      case key_192:
-        tinyjambu_192::state_update<1152ul>(state, key);
-        break;
-      case key_256:
-        tinyjambu_256::state_update<1280ul>(state, key);
-        break;
+
+    if constexpr (v == key_128) {
+      tinyjambu_128::state_update<1024ul>(state, key);
+    } else if constexpr (v == key_192) {
+      tinyjambu_192::state_update<1152ul>(state, key);
+    } else if constexpr (v == key_256) {
+      tinyjambu_256::state_update<1280ul>(state, key);
     }
 
     uint32_t enc = 0u;
@@ -400,31 +377,27 @@ finalize(
 )
 {
   state[1] = state[1] ^ FRAMEBITS_TAG;
-  switch (v) {
-    case key_128:
-      tinyjambu_128::state_update<1024ul>(state, key);
-      break;
-    case key_192:
-      tinyjambu_192::state_update<1152ul>(state, key);
-      break;
-    case key_256:
-      tinyjambu_256::state_update<1280ul>(state, key);
-      break;
+
+  if constexpr (v == key_128) {
+    tinyjambu_128::state_update<1024ul>(state, key);
+  } else if constexpr (v == key_192) {
+    tinyjambu_192::state_update<1152ul>(state, key);
+  } else if constexpr (v == key_256) {
+    tinyjambu_256::state_update<1280ul>(state, key);
   }
+
   to_le_bytes(state[2], tag);
 
   state[1] = state[1] ^ FRAMEBITS_TAG;
-  switch (v) {
-    case key_128:
-      tinyjambu_128::state_update<640ul>(state, key);
-      break;
-    case key_192:
-      tinyjambu_192::state_update<640ul>(state, key);
-      break;
-    case key_256:
-      tinyjambu_256::state_update<640ul>(state, key);
-      break;
+
+  if constexpr (v == key_128) {
+    tinyjambu_128::state_update<640ul>(state, key);
+  } else if constexpr (v == key_192) {
+    tinyjambu_192::state_update<640ul>(state, key);
+  } else if constexpr (v == key_256) {
+    tinyjambu_256::state_update<640ul>(state, key);
   }
+
   to_le_bytes(state[2], tag + 4);
 }
 
