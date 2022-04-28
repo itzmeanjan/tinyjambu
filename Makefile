@@ -13,10 +13,10 @@ IFLAGS = -I ./include
 #
 # Note :
 #
-# - If none defined, default choice `FBK_32` is passed !
+# - If none defined, default choice `FBK_32` is used !
 # - If one attempts to do `FBK=187 make`, which is not supported bitwidth,
 #   default choice `FBK_32` to be used
-DFBK = -DFBK_$(or $(FBK),32)
+DFBK = -DFBK_$(or $(FBK),0)
 
 all: test_tinyjambu
 
