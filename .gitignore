@@ -3,3 +3,8 @@
 *.gch
 *.so
 *.o
+__pycache__
+wrapper/python/bin/
+wrapper/python/lib/
+wrapper/python/pyvenv.cfg
+LWC_AEAD_KAT_*_96.txt
