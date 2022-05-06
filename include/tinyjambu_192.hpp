@@ -28,6 +28,9 @@ encrypt(const uint8_t* const __restrict key,   // 192 -bit secret key
 
 #if defined __clang__
 #pragma unroll 6
+#elif defined __GNUG__
+#pragma GCC ivdep
+#pragma GCC unroll 6
 #endif
   for (size_t i = 0; i < 6; i++) {
     key_[i] = from_le_bytes(key + (i << 2));
@@ -67,6 +70,9 @@ decrypt(const uint8_t* const __restrict key,    // 192 -bit secret key
 
 #if defined __clang__
 #pragma unroll 6
+#elif defined __GNUG__
+#pragma GCC ivdep
+#pragma GCC unroll 6
 #endif
   for (size_t i = 0; i < 6; i++) {
     key_[i] = from_le_bytes(key + (i << 2));
