@@ -48,4 +48,4 @@ test_kat:
 
 bench_python:
 	make lib
-	cd wrapper/python; python3.10 bench_tinyjambu.py; cd ../..
+	cd wrapper/python; python3 bench_tinyjambu.py; cd ../..
