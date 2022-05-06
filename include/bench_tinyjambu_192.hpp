@@ -29,17 +29,17 @@ tinyjambu_192_encrypt(benchmark::State& state,
   memset(enc, 0, ct_len);
   memset(tag, 0, 8);
 
-  size_t itr = 0;
   for (auto _ : state) {
     tinyjambu_192::encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
 
     benchmark::DoNotOptimize(enc);
     benchmark::DoNotOptimize(tag);
-    benchmark::DoNotOptimize(itr++);
   }
 
-  state.SetBytesProcessed(static_cast<int64_t>((dt_len + ct_len) * itr));
-  state.SetItemsProcessed(static_cast<int64_t>(itr));
+  const size_t per_itr_data = dt_len + ct_len;
+  const size_t total_data = per_itr_data * state.iterations();
+
+  state.SetBytesProcessed(static_cast<int64_t>(total_data));
 
   // deallocate all resources
   free(text);
@@ -80,18 +80,18 @@ tinyjambu_192_decrypt(benchmark::State& state,
 
   tinyjambu_192::encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
 
-  size_t itr = 0;
   for (auto _ : state) {
     using namespace tinyjambu_192;
     using namespace benchmark;
 
     DoNotOptimize(decrypt(key, nonce, tag, data, dt_len, enc, dec, ct_len));
     DoNotOptimize(dec);
-    DoNotOptimize(itr++);
   }
 
-  state.SetBytesProcessed(static_cast<int64_t>((dt_len + ct_len) * itr));
-  state.SetItemsProcessed(static_cast<int64_t>(itr));
+  const size_t per_itr_data = dt_len + ct_len;
+  const size_t total_data = per_itr_data * state.iterations();
+
+  state.SetBytesProcessed(static_cast<int64_t>(total_data));
 
   // deallocate all resources
   free(text);
