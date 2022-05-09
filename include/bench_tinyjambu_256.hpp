@@ -5,10 +5,11 @@
 
 // Benchmark TinyJambu-256 authenticated encryption routine
 static void
-tinyjambu_256_encrypt(benchmark::State& state,
-                      const size_t ct_len,
-                      const size_t dt_len)
+tinyjambu_256_encrypt(benchmark::State& state)
 {
+  const size_t ct_len = state.range(0);
+  const size_t dt_len = state.range(1);
+
   // acquire memory resources
   uint8_t* text = static_cast<uint8_t*>(malloc(ct_len));
   uint8_t* enc = static_cast<uint8_t*>(malloc(ct_len));
@@ -29,17 +30,17 @@ tinyjambu_256_encrypt(benchmark::State& state,
   memset(enc, 0, ct_len);
   memset(tag, 0, 8);
 
-  size_t itr = 0;
   for (auto _ : state) {
     tinyjambu_256::encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
 
     benchmark::DoNotOptimize(enc);
     benchmark::DoNotOptimize(tag);
-    benchmark::DoNotOptimize(itr++);
   }
 
-  state.SetBytesProcessed(static_cast<int64_t>((dt_len + ct_len) * itr));
-  state.SetItemsProcessed(static_cast<int64_t>(itr));
+  const size_t per_itr_data = dt_len + ct_len;
+  const size_t total_data = per_itr_data * state.iterations();
+
+  state.SetBytesProcessed(static_cast<int64_t>(total_data));
 
   // deallocate all resources
   free(text);
@@ -52,10 +53,11 @@ tinyjambu_256_encrypt(benchmark::State& state,
 
 // Benchmark TinyJambu-256 verified decryption routine
 static void
-tinyjambu_256_decrypt(benchmark::State& state,
-                      const size_t ct_len,
-                      const size_t dt_len)
+tinyjambu_256_decrypt(benchmark::State& state)
 {
+  const size_t ct_len = state.range(0);
+  const size_t dt_len = state.range(1);
+
   // acquire memory resources
   uint8_t* text = static_cast<uint8_t*>(malloc(ct_len));
   uint8_t* enc = static_cast<uint8_t*>(malloc(ct_len));
@@ -80,18 +82,18 @@ tinyjambu_256_decrypt(benchmark::State& state,
 
   tinyjambu_256::encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
 
-  size_t itr = 0;
   for (auto _ : state) {
     using namespace tinyjambu_256;
     using namespace benchmark;
 
     DoNotOptimize(decrypt(key, nonce, tag, data, dt_len, enc, dec, ct_len));
     DoNotOptimize(dec);
-    DoNotOptimize(itr++);
   }
 
-  state.SetBytesProcessed(static_cast<int64_t>((dt_len + ct_len) * itr));
-  state.SetItemsProcessed(static_cast<int64_t>(itr));
+  const size_t per_itr_data = dt_len + ct_len;
+  const size_t total_data = per_itr_data * state.iterations();
+
+  state.SetBytesProcessed(static_cast<int64_t>(total_data));
 
   // deallocate all resources
   free(text);
@@ -101,116 +103,4 @@ tinyjambu_256_decrypt(benchmark::State& state,
   free(key);
   free(nonce);
   free(tag);
-}
-
-// Benchmark TinyJambu-256 encrypt routine with 64 -bytes plain text & 32 -bytes
-// associated data
-static void
-tinyjambu_256_encrypt_64B_32B(benchmark::State& state)
-{
-  tinyjambu_256_encrypt(state, 64ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 encrypt routine with 128 -bytes plain text & 32
-// -bytes associated data
-static void
-tinyjambu_256_encrypt_128B_32B(benchmark::State& state)
-{
-  tinyjambu_256_encrypt(state, 128ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 encrypt routine with 256 -bytes plain text & 32
-// -bytes associated data
-static void
-tinyjambu_256_encrypt_256B_32B(benchmark::State& state)
-{
-  tinyjambu_256_encrypt(state, 256ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 encrypt routine with 512 -bytes plain text & 32
-// -bytes associated data
-static void
-tinyjambu_256_encrypt_512B_32B(benchmark::State& state)
-{
-  tinyjambu_256_encrypt(state, 512ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 encrypt routine with 1024 -bytes plain text & 32
-// -bytes associated data
-static void
-tinyjambu_256_encrypt_1024B_32B(benchmark::State& state)
-{
-  tinyjambu_256_encrypt(state, 1024ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 encrypt routine with 2048 -bytes plain text & 32
-// -bytes associated data
-static void
-tinyjambu_256_encrypt_2048B_32B(benchmark::State& state)
-{
-  tinyjambu_256_encrypt(state, 2048ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 encrypt routine with 4096 -bytes plain text & 32
-// -bytes associated data
-static void
-tinyjambu_256_encrypt_4096B_32B(benchmark::State& state)
-{
-  tinyjambu_256_encrypt(state, 4096ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 decrypt routine with 64 -bytes cipher text & 32
-// -bytes associated data
-static void
-tinyjambu_256_decrypt_64B_32B(benchmark::State& state)
-{
-  tinyjambu_256_decrypt(state, 64ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 decrypt routine with 128 -bytes cipher text & 32
-// -bytes associated data
-static void
-tinyjambu_256_decrypt_128B_32B(benchmark::State& state)
-{
-  tinyjambu_256_decrypt(state, 128ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 decrypt routine with 256 -bytes cipher text & 32
-// -bytes associated data
-static void
-tinyjambu_256_decrypt_256B_32B(benchmark::State& state)
-{
-  tinyjambu_256_decrypt(state, 256ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 decrypt routine with 512 -bytes cipher text & 32
-// -bytes associated data
-static void
-tinyjambu_256_decrypt_512B_32B(benchmark::State& state)
-{
-  tinyjambu_256_decrypt(state, 512ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 decrypt routine with 1024 -bytes cipher text & 32
-// -bytes associated data
-static void
-tinyjambu_256_decrypt_1024B_32B(benchmark::State& state)
-{
-  tinyjambu_256_decrypt(state, 1024ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 decrypt routine with 2048 -bytes cipher text & 32
-// -bytes associated data
-static void
-tinyjambu_256_decrypt_2048B_32B(benchmark::State& state)
-{
-  tinyjambu_256_decrypt(state, 2048ul, 32ul);
-}
-
-// Benchmark TinyJambu-256 decrypt routine with 4096 -bytes cipher text & 32
-// -bytes associated data
-static void
-tinyjambu_256_decrypt_4096B_32B(benchmark::State& state)
-{
-  tinyjambu_256_decrypt(state, 4096ul, 32ul);
 }

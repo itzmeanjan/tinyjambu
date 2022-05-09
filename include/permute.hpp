@@ -54,14 +54,14 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
 #if defined FBK_32
   const size_t itr_cnt = rounds >> 5;
 
-  for (size_t i = 0, j = 0; i < itr_cnt; i++, j++) {
+  for (size_t i = 0; i < itr_cnt; i++) {
     const uint32_t s47 = (state[2] << 17) | (state[1] >> 15);
     const uint32_t s70 = (state[3] << 26) | (state[2] >> 6);
     const uint32_t s85 = (state[3] << 11) | (state[2] >> 21);
     const uint32_t s91 = (state[3] << 5) | (state[2] >> 27);
 
     // computed 32 feedback bits
-    const uint32_t fbk = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[j & 3ul];
+    const uint32_t fbk = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[i & 3ul];
 
     state[0] = state[1];
     state[1] = state[2];
@@ -134,23 +134,21 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
 #if defined FBK_32
   const size_t itr_cnt = rounds >> 5;
 
-  for (size_t i = 0, j = 0; i < itr_cnt; i++) {
+  for (size_t i = 0; i < itr_cnt; i++) {
+    const size_t j = i % 6ul;
+
     const uint32_t s47 = (state[2] << 17) | (state[1] >> 15);
     const uint32_t s70 = (state[3] << 26) | (state[2] >> 6);
     const uint32_t s85 = (state[3] << 11) | (state[2] >> 21);
     const uint32_t s91 = (state[3] << 5) | (state[2] >> 27);
 
     // computed 32 feedback bits
-    const uint32_t fbk = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[j++];
+    const uint32_t fbk = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[j];
 
     state[0] = state[1];
     state[1] = state[2];
     state[2] = state[3];
     state[3] = fbk;
-
-    if (j == 6ul) {
-      j = 0ul;
-    }
   }
 #elif defined FBK_128
   const size_t itr_cnt = rounds >> 7;
@@ -224,14 +222,14 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
 #if defined FBK_32
   const size_t itr_cnt = rounds >> 5;
 
-  for (size_t i = 0, j = 0; i < itr_cnt; i++, j++) {
+  for (size_t i = 0; i < itr_cnt; i++) {
     const uint32_t s47 = (state[2] << 17) | (state[1] >> 15);
     const uint32_t s70 = (state[3] << 26) | (state[2] >> 6);
     const uint32_t s85 = (state[3] << 11) | (state[2] >> 21);
     const uint32_t s91 = (state[3] << 5) | (state[2] >> 27);
 
     // computed 32 feedback bits
-    const uint32_t fbk = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[j & 7ul];
+    const uint32_t fbk = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[i & 7ul];
 
     state[0] = state[1];
     state[1] = state[2];
@@ -248,7 +246,7 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
       const uint32_t s85 = (state[3] << 11) | (state[2] >> 21);
       const uint32_t s91 = (state[3] << 5) | (state[2] >> 27);
 
-      state[0] = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[(j + 0ul) & 7ul];
+      state[0] = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[(j ^ 0ul) & 7ul];
     }
     {
       const uint32_t s47 = (state[3] << 17) | (state[2] >> 15);
@@ -256,7 +254,7 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
       const uint32_t s85 = (state[0] << 11) | (state[3] >> 21);
       const uint32_t s91 = (state[0] << 5) | (state[3] >> 27);
 
-      state[1] = state[1] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[(j + 1ul) & 7ul];
+      state[1] = state[1] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[(j ^ 1ul) & 7ul];
     }
     {
       const uint32_t s47 = (state[0] << 17) | (state[3] >> 15);
@@ -264,7 +262,7 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
       const uint32_t s85 = (state[1] << 11) | (state[0] >> 21);
       const uint32_t s91 = (state[1] << 5) | (state[0] >> 27);
 
-      state[2] = state[2] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[(j + 2ul) & 7ul];
+      state[2] = state[2] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[(j ^ 2ul) & 7ul];
     }
     {
       const uint32_t s47 = (state[1] << 17) | (state[0] >> 15);
@@ -272,7 +270,7 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
       const uint32_t s85 = (state[2] << 11) | (state[1] >> 21);
       const uint32_t s91 = (state[2] << 5) | (state[1] >> 27);
 
-      state[3] = state[3] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[(j + 3ul) & 7ul];
+      state[3] = state[3] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[(j ^ 3ul) & 7ul];
     }
   }
 #endif

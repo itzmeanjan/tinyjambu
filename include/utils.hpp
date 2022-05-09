@@ -24,6 +24,9 @@ to_le_bytes(const uint32_t word, uint8_t* const bytes)
 {
 #if defined __clang__
 #pragma unroll 4
+#elif defined __GNUG__
+#pragma GCC ivdep
+#pragma GCC unroll 4
 #endif
   for (size_t i = 0; i < 4; i++) {
     bytes[i] = static_cast<uint8_t>(word >> (i << 3));
