@@ -134,23 +134,21 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
 #if defined FBK_32
   const size_t itr_cnt = rounds >> 5;
 
-  for (size_t i = 0, j = 0; i < itr_cnt; i++) {
+  for (size_t i = 0; i < itr_cnt; i++) {
+    const size_t j = i % 6ul;
+
     const uint32_t s47 = (state[2] << 17) | (state[1] >> 15);
     const uint32_t s70 = (state[3] << 26) | (state[2] >> 6);
     const uint32_t s85 = (state[3] << 11) | (state[2] >> 21);
     const uint32_t s91 = (state[3] << 5) | (state[2] >> 27);
 
     // computed 32 feedback bits
-    const uint32_t fbk = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[j++];
+    const uint32_t fbk = state[0] ^ s47 ^ (~(s70 & s85)) ^ s91 ^ key[j];
 
     state[0] = state[1];
     state[1] = state[2];
     state[2] = state[3];
     state[3] = fbk;
-
-    if (j == 6ul) {
-      j = 0ul;
-    }
   }
 #elif defined FBK_128
   const size_t itr_cnt = rounds >> 7;
