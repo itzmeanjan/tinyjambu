@@ -122,7 +122,7 @@ process_associated_data(
 
     uint32_t word = 0u;
     for (size_t i = 0; i < take; i++) {
-      word |= static_cast<uint32_t>(data[b_off + i] << (i << 3));
+      word |= static_cast<uint32_t>(data[b_off + i]) << (i << 3);
     }
 
     state[3] ^= word;
@@ -165,7 +165,7 @@ process_plain_text(
 
     uint32_t word = 0u;
     for (size_t i = 0; i < take; i++) {
-      word |= static_cast<uint32_t>(text[b_off + i] << (i << 3));
+      word |= static_cast<uint32_t>(text[b_off + i]) << (i << 3);
     }
 
     state[3] ^= word;
@@ -214,14 +214,13 @@ process_cipher_text(
 
     uint32_t word = 0u;
     for (size_t i = 0; i < take; i++) {
-      word |= static_cast<uint32_t>(cipher[b_off + i] << (i << 3));
+      word |= static_cast<uint32_t>(cipher[b_off + i]) << (i << 3);
     }
 
     const uint32_t dec = state[2] ^ word;
 
-    for (size_t i = 0; i < take; i++) {
-      state[3] ^= dec & (0xffu << (i << 3));
-    }
+    const uint32_t mask = 0xffffffffu >> ((4ul - take) << 3);
+    state[3] ^= (dec & mask);
 
     for (size_t i = 0; i < take; i++) {
       text[b_off + i] = static_cast<uint8_t>(dec >> (i << 3));
