@@ -7,70 +7,70 @@
 // Note, associated data size is kept constant for all benchmark cases !
 
 // TinyJambu-128 encrypt/ decrypt routines
-BENCHMARK(tinyjambu_128_encrypt_64B_32B);
-BENCHMARK(tinyjambu_128_decrypt_64B_32B);
+BENCHMARK(tinyjambu_128_encrypt)->Args({ 64, 32 });
+BENCHMARK(tinyjambu_128_decrypt)->Args({ 64, 32 });
 
-BENCHMARK(tinyjambu_128_encrypt_128B_32B);
-BENCHMARK(tinyjambu_128_decrypt_128B_32B);
+BENCHMARK(tinyjambu_128_encrypt)->Args({ 128, 32 });
+BENCHMARK(tinyjambu_128_decrypt)->Args({ 128, 32 });
 
-BENCHMARK(tinyjambu_128_encrypt_256B_32B);
-BENCHMARK(tinyjambu_128_decrypt_256B_32B);
+BENCHMARK(tinyjambu_128_encrypt)->Args({ 256, 32 });
+BENCHMARK(tinyjambu_128_decrypt)->Args({ 256, 32 });
 
-BENCHMARK(tinyjambu_128_encrypt_512B_32B);
-BENCHMARK(tinyjambu_128_decrypt_512B_32B);
+BENCHMARK(tinyjambu_128_encrypt)->Args({ 512, 32 });
+BENCHMARK(tinyjambu_128_decrypt)->Args({ 512, 32 });
 
-BENCHMARK(tinyjambu_128_encrypt_1024B_32B);
-BENCHMARK(tinyjambu_128_decrypt_1024B_32B);
+BENCHMARK(tinyjambu_128_encrypt)->Args({ 1024, 32 });
+BENCHMARK(tinyjambu_128_decrypt)->Args({ 1024, 32 });
 
-BENCHMARK(tinyjambu_128_encrypt_2048B_32B);
-BENCHMARK(tinyjambu_128_decrypt_2048B_32B);
+BENCHMARK(tinyjambu_128_encrypt)->Args({ 2048, 32 });
+BENCHMARK(tinyjambu_128_decrypt)->Args({ 2048, 32 });
 
-BENCHMARK(tinyjambu_128_encrypt_4096B_32B);
-BENCHMARK(tinyjambu_128_decrypt_4096B_32B);
+BENCHMARK(tinyjambu_128_encrypt)->Args({ 4096, 32 });
+BENCHMARK(tinyjambu_128_decrypt)->Args({ 4096, 32 });
 
 // TinyJambu-192 encrypt/ decrypt routines
-BENCHMARK(tinyjambu_192_encrypt_64B_32B);
-BENCHMARK(tinyjambu_192_decrypt_64B_32B);
+BENCHMARK(tinyjambu_192_encrypt)->Args({ 64, 32 });
+BENCHMARK(tinyjambu_192_decrypt)->Args({ 64, 32 });
 
-BENCHMARK(tinyjambu_192_encrypt_128B_32B);
-BENCHMARK(tinyjambu_192_decrypt_128B_32B);
+BENCHMARK(tinyjambu_192_encrypt)->Args({ 128, 32 });
+BENCHMARK(tinyjambu_192_decrypt)->Args({ 128, 32 });
 
-BENCHMARK(tinyjambu_192_encrypt_256B_32B);
-BENCHMARK(tinyjambu_192_decrypt_256B_32B);
+BENCHMARK(tinyjambu_192_encrypt)->Args({ 256, 32 });
+BENCHMARK(tinyjambu_192_decrypt)->Args({ 256, 32 });
 
-BENCHMARK(tinyjambu_192_encrypt_512B_32B);
-BENCHMARK(tinyjambu_192_decrypt_512B_32B);
+BENCHMARK(tinyjambu_192_encrypt)->Args({ 512, 32 });
+BENCHMARK(tinyjambu_192_decrypt)->Args({ 512, 32 });
 
-BENCHMARK(tinyjambu_192_encrypt_1024B_32B);
-BENCHMARK(tinyjambu_192_decrypt_1024B_32B);
+BENCHMARK(tinyjambu_192_encrypt)->Args({ 1024, 32 });
+BENCHMARK(tinyjambu_192_decrypt)->Args({ 1024, 32 });
 
-BENCHMARK(tinyjambu_192_encrypt_2048B_32B);
-BENCHMARK(tinyjambu_192_decrypt_2048B_32B);
+BENCHMARK(tinyjambu_192_encrypt)->Args({ 2048, 32 });
+BENCHMARK(tinyjambu_192_decrypt)->Args({ 2048, 32 });
 
-BENCHMARK(tinyjambu_192_encrypt_4096B_32B);
-BENCHMARK(tinyjambu_192_decrypt_4096B_32B);
+BENCHMARK(tinyjambu_192_encrypt)->Args({ 4096, 32 });
+BENCHMARK(tinyjambu_192_decrypt)->Args({ 4096, 32 });
 
 // TinyJambu-256 encrypt/ decrypt routines
-BENCHMARK(tinyjambu_256_encrypt_64B_32B);
-BENCHMARK(tinyjambu_256_decrypt_64B_32B);
+BENCHMARK(tinyjambu_256_encrypt)->Args({ 64, 32 });
+BENCHMARK(tinyjambu_256_decrypt)->Args({ 64, 32 });
 
-BENCHMARK(tinyjambu_256_encrypt_128B_32B);
-BENCHMARK(tinyjambu_256_decrypt_128B_32B);
+BENCHMARK(tinyjambu_256_encrypt)->Args({ 128, 32 });
+BENCHMARK(tinyjambu_256_decrypt)->Args({ 128, 32 });
 
-BENCHMARK(tinyjambu_256_encrypt_256B_32B);
-BENCHMARK(tinyjambu_256_decrypt_256B_32B);
+BENCHMARK(tinyjambu_256_encrypt)->Args({ 256, 32 });
+BENCHMARK(tinyjambu_256_decrypt)->Args({ 256, 32 });
 
-BENCHMARK(tinyjambu_256_encrypt_512B_32B);
-BENCHMARK(tinyjambu_256_decrypt_512B_32B);
+BENCHMARK(tinyjambu_256_encrypt)->Args({ 512, 32 });
+BENCHMARK(tinyjambu_256_decrypt)->Args({ 512, 32 });
 
-BENCHMARK(tinyjambu_256_encrypt_1024B_32B);
-BENCHMARK(tinyjambu_256_decrypt_1024B_32B);
+BENCHMARK(tinyjambu_256_encrypt)->Args({ 1024, 32 });
+BENCHMARK(tinyjambu_256_decrypt)->Args({ 1024, 32 });
 
-BENCHMARK(tinyjambu_256_encrypt_2048B_32B);
-BENCHMARK(tinyjambu_256_decrypt_2048B_32B);
+BENCHMARK(tinyjambu_256_encrypt)->Args({ 2048, 32 });
+BENCHMARK(tinyjambu_256_decrypt)->Args({ 2048, 32 });
 
-BENCHMARK(tinyjambu_256_encrypt_4096B_32B);
-BENCHMARK(tinyjambu_256_decrypt_4096B_32B);
+BENCHMARK(tinyjambu_256_encrypt)->Args({ 4096, 32 });
+BENCHMARK(tinyjambu_256_decrypt)->Args({ 4096, 32 });
 
 // main function to make it executable
 BENCHMARK_MAIN();
