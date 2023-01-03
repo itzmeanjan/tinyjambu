@@ -9,7 +9,7 @@ namespace test_tinyjambu {
 // compare, on randomly generated input bytes, while also mutating ( a single
 // bit flip ) decrypt routine input set to show that AEAD scheme works as
 // expected
-static inline void
+void
 key_256(const size_t dt_len, const size_t ct_len, const mutate_t m)
 {
   uint8_t* key = static_cast<uint8_t*>(std::malloc(32ul));

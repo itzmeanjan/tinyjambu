@@ -1,18 +1,18 @@
 #pragma once
 #include "test.hpp"
-#include "tinyjambu_192.hpp"
+#include "tinyjambu_128.hpp"
 #include <cassert>
 
 namespace test_tinyjambu {
 
-// Test TinyJambu-192 AEAD Implementation by executing encrypt -> decrypt ->
+// Test TinyJambu-128 AEAD Implementation by executing encrypt -> decrypt ->
 // compare, on randomly generated input bytes, while also mutating ( a single
 // bit flip ) decrypt routine input set to show that AEAD scheme works as
 // expected
-static inline void
-key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
+void
+key_128(const size_t dt_len, const size_t ct_len, const mutate_t m)
 {
-  uint8_t* key = static_cast<uint8_t*>(std::malloc(24u));
+  uint8_t* key = static_cast<uint8_t*>(std::malloc(16u));
   uint8_t* nonce = static_cast<uint8_t*>(std::malloc(12u));
   uint8_t* tag = static_cast<uint8_t*>(std::malloc(8u));
   uint8_t* data = static_cast<uint8_t*>(std::malloc(dt_len));
@@ -20,12 +20,12 @@ key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
   uint8_t* enc = static_cast<uint8_t*>(std::malloc(ct_len));
   uint8_t* dec = static_cast<uint8_t*>(std::malloc(ct_len));
 
-  random_data(key, 24);
+  random_data(key, 16);
   random_data(nonce, 12);
   random_data(data, dt_len);
   random_data(text, ct_len);
 
-  using namespace tinyjambu_192;
+  using namespace tinyjambu_128;
 
   encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
 

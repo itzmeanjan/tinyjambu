@@ -1,6 +1,4 @@
-#include "test_tinyjambu_128.hpp"
-#include "test_tinyjambu_192.hpp"
-#include "test_tinyjambu_256.hpp"
+#include "test/test_tinyjambu.hpp"
 #include <iostream>
 
 int
