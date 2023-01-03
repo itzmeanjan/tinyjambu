@@ -61,16 +61,28 @@ key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
   switch (m) {
     case mutate_t::key:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::nonce:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::tag:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::data:
       if (dt_len > 0) {
         assert(!f);
+        if (ct_len > 0) {
+          assert(is_zeros(dec, ct_len));
+        }
       } else {
         assert(f);
 
@@ -84,6 +96,7 @@ key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
     case mutate_t::enc:
       if (ct_len > 0) {
         assert(!f);
+        assert(is_zeros(dec, ct_len));
       } else {
         assert(f);
       }
