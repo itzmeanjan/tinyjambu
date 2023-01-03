@@ -1,6 +1,6 @@
-CXX = dpcpp
-CXXFLAGS = -std=c++20 -Wall -Weverything -Wno-c++98-compat -Wno-c++98-c++11-compat-binary-literal -Wno-c++98-compat-pedantic
-OPTFLAGS = -O3
+CXX = g++
+CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic
+OPTFLAGS = -O3 -march=native -mtune=native
 IFLAGS = -I ./include
 
 # Consider launching all make recipes as shown in following example
@@ -18,13 +18,16 @@ IFLAGS = -I ./include
 #   default choice `FBK_32` to be used
 DFBK = -DFBK_$(or $(FBK),0)
 
-all: test_tinyjambu
+all: test_tinyjambu test_kat
 
-test/a.out: test/main.cpp include/*.hpp
+test/a.out: test/main.cpp include/*.hpp include/test/*.hpp
 	$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(DFBK) $(IFLAGS) $< -o $@
 
 test_tinyjambu: test/a.out
 	./$<
+
+test_kat:
+	bash test.sh
 
 clean:
 	find . -name '*.out' -o -name '*.o' -o -name '*.so' | xargs rm -rf
@@ -32,20 +35,13 @@ clean:
 format:
 	find . -name '*.cpp' -o -name '*.hpp' | xargs clang-format -i --style=Mozilla
 
-bench/a.out: bench/main.cpp include/*.hpp
+bench/a.out: bench/main.cpp include/*.hpp include/bench/*.hpp
 	# make sure you've google-benchmark globally installed
 	# see https://github.com/google/benchmark/tree/60b16f1#installation
-	$(CXX) $(CXXFLAGS) -Wno-global-constructors $(OPTFLAGS) $(DFBK) $(IFLAGS) $< -lbenchmark -lpthread -o $@
+	$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(DFBK) $(IFLAGS) $< -lbenchmark -o $@
 
 benchmark: bench/a.out
 	./$<
 
 lib:
-	$(CXX) $(CXXFLAGS) -Wno-unused-function $(OPTFLAGS) $(DFBK) $(IFLAGS) -fPIC --shared wrapper/tinyjambu.cpp -o wrapper/libtinyjambu.so
-
-test_kat:
-	bash test.sh
-
-bench_python:
-	make lib
-	cd wrapper/python; python3 bench_tinyjambu.py; cd ../..
+	$(CXX) $(CXXFLAGS) $(OPTFLAGS) $(DFBK) $(IFLAGS) -fPIC --shared wrapper/tinyjambu.cpp -o wrapper/libtinyjambu.so

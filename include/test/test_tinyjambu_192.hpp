@@ -1,5 +1,5 @@
 #pragma once
-#include "test.hpp"
+#include "test_common.hpp"
 #include "tinyjambu_192.hpp"
 #include <cassert>
 
@@ -9,7 +9,7 @@ namespace test_tinyjambu {
 // compare, on randomly generated input bytes, while also mutating ( a single
 // bit flip ) decrypt routine input set to show that AEAD scheme works as
 // expected
-static inline void
+void
 key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
 {
   uint8_t* key = static_cast<uint8_t*>(std::malloc(24u));
@@ -61,22 +61,33 @@ key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
   switch (m) {
     case mutate_t::key:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::nonce:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::tag:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::data:
       if (dt_len > 0) {
         assert(!f);
+        if (ct_len > 0) {
+          assert(is_zeros(dec, ct_len));
+        }
       } else {
         assert(f);
 
         // byte-by-byte comparison to be sure that original plain text &
-        // decrypted
-        // plain text bytes are actually same !
+        // decrypted plain text bytes are actually same !
         for (size_t i = 0; i < ct_len; i++) {
           assert(text[i] == dec[i]);
         }
@@ -85,15 +96,9 @@ key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
     case mutate_t::enc:
       if (ct_len > 0) {
         assert(!f);
+        assert(is_zeros(dec, ct_len));
       } else {
         assert(f);
-
-        // byte-by-byte comparison to be sure that original plain text &
-        // decrypted
-        // plain text bytes are actually same !
-        for (size_t i = 0; i < ct_len; i++) {
-          assert(text[i] == dec[i]);
-        }
       }
       break;
     case mutate_t::none:

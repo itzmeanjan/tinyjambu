@@ -1,11 +1,11 @@
 #pragma once
-#include "tinyjambu_256.hpp"
+#include "tinyjambu_128.hpp"
 #include <benchmark/benchmark.h>
 #include <string.h>
 
-// Benchmark TinyJambu-256 authenticated encryption routine
-static void
-tinyjambu_256_encrypt(benchmark::State& state)
+// Benchmark TinyJambu-128 authenticated encryption routine
+void
+tinyjambu_128_encrypt(benchmark::State& state)
 {
   const size_t ct_len = state.range(0);
   const size_t dt_len = state.range(1);
@@ -14,7 +14,7 @@ tinyjambu_256_encrypt(benchmark::State& state)
   uint8_t* text = static_cast<uint8_t*>(malloc(ct_len));
   uint8_t* enc = static_cast<uint8_t*>(malloc(ct_len));
   uint8_t* data = static_cast<uint8_t*>(malloc(dt_len));
-  uint8_t* key = static_cast<uint8_t*>(malloc(32));
+  uint8_t* key = static_cast<uint8_t*>(malloc(16));
   uint8_t* nonce = static_cast<uint8_t*>(malloc(12));
   uint8_t* tag = static_cast<uint8_t*>(malloc(8));
 
@@ -22,8 +22,8 @@ tinyjambu_256_encrypt(benchmark::State& state)
   random_data(text, ct_len);
   // random associated data bytes
   random_data(data, dt_len);
-  // random secret key ( = 256 -bit )
-  random_data(key, 32);
+  // random secret key ( = 128 -bit )
+  random_data(key, 16);
   // random public message nonce ( = 96 -bit )
   random_data(nonce, 12);
 
@@ -31,10 +31,11 @@ tinyjambu_256_encrypt(benchmark::State& state)
   memset(tag, 0, 8);
 
   for (auto _ : state) {
-    tinyjambu_256::encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
+    tinyjambu_128::encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
 
     benchmark::DoNotOptimize(enc);
     benchmark::DoNotOptimize(tag);
+    benchmark::ClobberMemory();
   }
 
   const size_t per_itr_data = dt_len + ct_len;
@@ -51,9 +52,9 @@ tinyjambu_256_encrypt(benchmark::State& state)
   free(tag);
 }
 
-// Benchmark TinyJambu-256 verified decryption routine
-static void
-tinyjambu_256_decrypt(benchmark::State& state)
+// Benchmark TinyJambu-128 verified decryption routine
+void
+tinyjambu_128_decrypt(benchmark::State& state)
 {
   const size_t ct_len = state.range(0);
   const size_t dt_len = state.range(1);
@@ -63,7 +64,7 @@ tinyjambu_256_decrypt(benchmark::State& state)
   uint8_t* enc = static_cast<uint8_t*>(malloc(ct_len));
   uint8_t* dec = static_cast<uint8_t*>(malloc(ct_len));
   uint8_t* data = static_cast<uint8_t*>(malloc(dt_len));
-  uint8_t* key = static_cast<uint8_t*>(malloc(32));
+  uint8_t* key = static_cast<uint8_t*>(malloc(16));
   uint8_t* nonce = static_cast<uint8_t*>(malloc(12));
   uint8_t* tag = static_cast<uint8_t*>(malloc(8));
 
@@ -71,8 +72,8 @@ tinyjambu_256_decrypt(benchmark::State& state)
   random_data(text, ct_len);
   // random associated data bytes
   random_data(data, dt_len);
-  // random secret key ( = 256 -bit )
-  random_data(key, 32);
+  // random secret key ( = 128 -bit )
+  random_data(key, 16);
   // random public message nonce ( = 96 -bit )
   random_data(nonce, 12);
 
@@ -80,14 +81,15 @@ tinyjambu_256_decrypt(benchmark::State& state)
   memset(dec, 0, ct_len);
   memset(tag, 0, 8);
 
-  tinyjambu_256::encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
+  tinyjambu_128::encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
 
   for (auto _ : state) {
-    using namespace tinyjambu_256;
+    using namespace tinyjambu_128;
     using namespace benchmark;
 
     DoNotOptimize(decrypt(key, nonce, tag, data, dt_len, enc, dec, ct_len));
     DoNotOptimize(dec);
+    benchmark::ClobberMemory();
   }
 
   const size_t per_itr_data = dt_len + ct_len;

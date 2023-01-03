@@ -9,7 +9,7 @@ namespace tinyjambu_256 {
 // encrypted ) & M -bytes of plain text ( which is encrypted ), producing M
 // -bytes of cipher text & 64 -bit of authentication tag --- providing
 // confidentiality, integrity & authentication
-static inline void
+inline void
 encrypt(const uint8_t* const __restrict key,   // 256 -bit secret key
         const uint8_t* const __restrict nonce, // 96 -bit public message nonce
         const uint8_t* const __restrict data,  // associated data
@@ -23,23 +23,30 @@ encrypt(const uint8_t* const __restrict key,   // 256 -bit secret key
   using namespace tinyjambu;
 
   // note permutation state must be zero initialized !
-  uint32_t state[4] = { 0u };
-  uint32_t key_[8] = { 0u };
+  uint32_t state[4]{};
+  uint32_t key_[8]{};
 
 #if defined __clang__
-#pragma unroll 4
+  // Following
+  // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
+
+#pragma clang loop unroll(enable)
+#pragma clang loop vectorize(enable)
 #elif defined __GNUG__
+  // Following
+  // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
+
 #pragma GCC ivdep
-#pragma GCC unroll 4
+#pragma GCC unroll 8
 #endif
   for (size_t i = 0; i < 8; i++) {
     key_[i] = from_le_bytes(key + (i << 2));
   }
 
-  initialize<key_256>(state, key_, nonce);
-  process_associated_data<key_256>(state, key_, data, data_len);
-  process_plain_text<key_256>(state, key_, text, cipher, ct_len);
-  finalize<key_256>(state, key_, tag);
+  initialize<variant::key_256>(state, key_, nonce);
+  process_associated_data<variant::key_256>(state, key_, data, data_len);
+  process_plain_text<variant::key_256>(state, key_, text, cipher, ct_len);
+  finalize<variant::key_256>(state, key_, tag);
 }
 
 // TinyJambu-256 Verified Decryption, which takes 256 -bit secret key, 96
@@ -50,7 +57,7 @@ encrypt(const uint8_t* const __restrict key,   // 256 -bit secret key
 //
 // Note, if returned boolean verification status is not truth value, don't
 // consume decrypted bytes !
-static inline bool
+inline bool
 decrypt(const uint8_t* const __restrict key,    // 256 -bit secret key
         const uint8_t* const __restrict nonce,  // 96 -bit public message nonce
         const uint8_t* const __restrict tag,    // 64 -bit authentication tag
@@ -64,29 +71,53 @@ decrypt(const uint8_t* const __restrict key,    // 256 -bit secret key
   using namespace tinyjambu;
 
   // note permutation state must be zero initialized !
-  uint32_t state[4] = { 0u };
-  uint32_t key_[8] = { 0u };
-  uint8_t tag_[8] = { 0u };
+  uint32_t state[4]{};
+  uint32_t key_[8]{};
+  uint8_t tag_[8]{};
 
 #if defined __clang__
-#pragma unroll 4
+  // Following
+  // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
+
+#pragma clang loop unroll(enable)
+#pragma clang loop vectorize(enable)
 #elif defined __GNUG__
+  // Following
+  // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
+
 #pragma GCC ivdep
-#pragma GCC unroll 4
+#pragma GCC unroll 8
 #endif
   for (size_t i = 0; i < 8; i++) {
     key_[i] = from_le_bytes(key + (i << 2));
   }
 
-  initialize<key_256>(state, key_, nonce);
-  process_associated_data<key_256>(state, key_, data, data_len);
-  process_cipher_text<key_256>(state, key_, cipher, text, ct_len);
-  finalize<key_256>(state, key_, tag_);
+  initialize<variant::key_256>(state, key_, nonce);
+  process_associated_data<variant::key_256>(state, key_, data, data_len);
+  process_cipher_text<variant::key_256>(state, key_, cipher, text, ct_len);
+  finalize<variant::key_256>(state, key_, tag_);
 
   bool flag = false;
+
+#if defined __clang__
+  // Following
+  // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
+
+#pragma clang loop unroll(enable)
+#pragma clang loop vectorize(enable)
+#elif defined __GNUG__
+  // Following
+  // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
+
+#pragma GCC ivdep
+#pragma GCC unroll 8
+#endif
   for (size_t i = 0; i < 8; i++) {
     flag |= static_cast<bool>(tag[i] ^ tag_[i]);
   }
+
+  // prevent release of unverified plain text ( RUP )
+  std::memset(text, 0, flag * ct_len);
   return !flag;
 }
 

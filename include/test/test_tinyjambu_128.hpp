@@ -1,31 +1,31 @@
 #pragma once
-#include "test.hpp"
-#include "tinyjambu_256.hpp"
+#include "test_common.hpp"
+#include "tinyjambu_128.hpp"
 #include <cassert>
 
 namespace test_tinyjambu {
 
-// Test TinyJambu-256 AEAD Implementation by executing encrypt -> decrypt ->
+// Test TinyJambu-128 AEAD Implementation by executing encrypt -> decrypt ->
 // compare, on randomly generated input bytes, while also mutating ( a single
 // bit flip ) decrypt routine input set to show that AEAD scheme works as
 // expected
-static inline void
-key_256(const size_t dt_len, const size_t ct_len, const mutate_t m)
+void
+key_128(const size_t dt_len, const size_t ct_len, const mutate_t m)
 {
-  uint8_t* key = static_cast<uint8_t*>(std::malloc(32ul));
-  uint8_t* nonce = static_cast<uint8_t*>(std::malloc(12ul));
-  uint8_t* tag = static_cast<uint8_t*>(std::malloc(8ul));
+  uint8_t* key = static_cast<uint8_t*>(std::malloc(16u));
+  uint8_t* nonce = static_cast<uint8_t*>(std::malloc(12u));
+  uint8_t* tag = static_cast<uint8_t*>(std::malloc(8u));
   uint8_t* data = static_cast<uint8_t*>(std::malloc(dt_len));
   uint8_t* text = static_cast<uint8_t*>(std::malloc(ct_len));
   uint8_t* enc = static_cast<uint8_t*>(std::malloc(ct_len));
   uint8_t* dec = static_cast<uint8_t*>(std::malloc(ct_len));
 
-  random_data(key, 32ul);
-  random_data(nonce, 12ul);
+  random_data(key, 16);
+  random_data(nonce, 12);
   random_data(data, dt_len);
   random_data(text, ct_len);
 
-  using namespace tinyjambu_256;
+  using namespace tinyjambu_128;
 
   encrypt(key, nonce, data, dt_len, text, enc, ct_len, tag);
 
@@ -61,22 +61,33 @@ key_256(const size_t dt_len, const size_t ct_len, const mutate_t m)
   switch (m) {
     case mutate_t::key:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::nonce:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::tag:
       assert(!f);
+      if (ct_len > 0) {
+        assert(is_zeros(dec, ct_len));
+      }
       break;
     case mutate_t::data:
       if (dt_len > 0) {
         assert(!f);
+        if (ct_len > 0) {
+          assert(is_zeros(dec, ct_len));
+        }
       } else {
         assert(f);
 
         // byte-by-byte comparison to be sure that original plain text &
-        // decrypted
-        // plain text bytes are actually same !
+        // decrypted plain text bytes are actually same !
         for (size_t i = 0; i < ct_len; i++) {
           assert(text[i] == dec[i]);
         }
@@ -85,15 +96,9 @@ key_256(const size_t dt_len, const size_t ct_len, const mutate_t m)
     case mutate_t::enc:
       if (ct_len > 0) {
         assert(!f);
+        assert(is_zeros(dec, ct_len));
       } else {
         assert(f);
-
-        // byte-by-byte comparison to be sure that original plain text &
-        // decrypted
-        // plain text bytes are actually same !
-        for (size_t i = 0; i < ct_len; i++) {
-          assert(text[i] == dec[i]);
-        }
       }
       break;
     case mutate_t::none:

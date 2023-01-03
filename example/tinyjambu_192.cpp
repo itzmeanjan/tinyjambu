@@ -1,7 +1,7 @@
 #include "tinyjambu_192.hpp"
 #include <cassert>
+#include <cstring>
 #include <iostream>
-#include <string.h>
 
 // Example demontrating how to use TinyJambu-192 AEAD C++20 header-only
 // library API.

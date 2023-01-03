@@ -1,6 +1,7 @@
 #pragma once
 #include "permute.hpp"
 #include "utils.hpp"
+#include <cstring>
 #include <type_traits>
 
 // Commonly used routines in TinyJambu-{128, 192, 256} Authenticated Encryption
@@ -8,7 +9,7 @@
 namespace tinyjambu {
 
 // Three TinyJambu variants based on different secret key sizes
-enum variant
+enum class variant : uint8_t
 {
   key_128, // 128 -bit secret key
   key_192, // 192 -bit secret key
@@ -51,24 +52,25 @@ constexpr uint32_t FRAMEBITS_TAG = 0x70u;
 // Initializes 128 -bit permutation state using {128, 192, 256} -bit secret key
 // & 96 -bit public message nonce
 //
-// Note, this function expects that state is already zero-initialized !
-//
 // See section 3.3.1 of TinyJambu specification
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 template<const variant v>
-static inline void
+static inline constexpr void
 initialize(
   uint32_t* const __restrict state,     // 128 -bit state
   const uint32_t* const __restrict key, // {128, 192, 256} -bit secret key
   const uint8_t* const __restrict nonce // 96 -bit public message nonce
 )
 {
+  // Initialize state array with 128 zero bits - just to be safe !
+  std::memset(state, 0, 16);
+
   // key setup
-  if (std::is_constant_evaluated() && (v == key_128)) {
+  if (std::is_constant_evaluated() && (v == variant::key_128)) {
     tinyjambu_128::state_update<1024ul>(state, key);
-  } else if (std::is_constant_evaluated() && (v == key_192)) {
+  } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
     tinyjambu_192::state_update<1152ul>(state, key);
-  } else if (std::is_constant_evaluated() && (v == key_256)) {
+  } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
     tinyjambu_256::state_update<1280ul>(state, key);
   }
 
@@ -76,15 +78,15 @@ initialize(
   for (size_t i = 0; i < 3; i++) {
     state[1] ^= FRAMEBITS_NONCE;
 
-    if (std::is_constant_evaluated() && (v == key_128)) {
+    if (std::is_constant_evaluated() && (v == variant::key_128)) {
       tinyjambu_128::state_update<640ul>(state, key);
-    } else if (std::is_constant_evaluated() && (v == key_192)) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
       tinyjambu_192::state_update<640ul>(state, key);
-    } else if (std::is_constant_evaluated() && (v == key_256)) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
       tinyjambu_256::state_update<640ul>(state, key);
     }
 
-    state[3] ^= from_le_bytes(nonce + (i << 2));
+    state[3] ^= from_le_bytes(nonce + i * 4);
   }
 }
 
@@ -96,7 +98,7 @@ initialize(
 // See section 3.3.2 of TinyJambu specification
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 template<const variant v>
-static inline void
+static inline constexpr void
 process_associated_data(
   uint32_t* const __restrict state,     // 128 -bit state
   const uint32_t* const __restrict key, // {128, 192, 256} -bit secret key
@@ -110,11 +112,11 @@ process_associated_data(
   while (b_off < data_len) {
     state[1] ^= FRAMEBITS_AD;
 
-    if (std::is_constant_evaluated() && (v == key_128)) {
+    if (std::is_constant_evaluated() && (v == variant::key_128)) {
       tinyjambu_128::state_update<640ul>(state, key);
-    } else if (std::is_constant_evaluated() && (v == key_192)) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
       tinyjambu_192::state_update<640ul>(state, key);
-    } else if (std::is_constant_evaluated() && (v == key_256)) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
       tinyjambu_256::state_update<640ul>(state, key);
     }
 
@@ -133,12 +135,12 @@ process_associated_data(
 }
 
 // Process N -many plain text bytes and computes equal number of cipher text
-// bytes, using TinyJambu-128 AEAD
+// bytes, using TinyJambu-{128, 192, 256} AEAD
 //
 // See section 3.3.3 of TinyJambu specification
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 template<const variant v>
-static inline void
+static inline constexpr void
 process_plain_text(
   uint32_t* const __restrict state,     // 128 -bit state
   const uint32_t* const __restrict key, // {128, 192, 256} -bit secret key
@@ -153,11 +155,11 @@ process_plain_text(
   while (b_off < ct_len) {
     state[1] ^= FRAMEBITS_CT;
 
-    if (std::is_constant_evaluated() && (v == key_128)) {
+    if (std::is_constant_evaluated() && (v == variant::key_128)) {
       tinyjambu_128::state_update<1024ul>(state, key);
-    } else if (std::is_constant_evaluated() && (v == key_192)) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
       tinyjambu_192::state_update<1152ul>(state, key);
-    } else if (std::is_constant_evaluated() && (v == key_256)) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
       tinyjambu_256::state_update<1280ul>(state, key);
     }
 
@@ -187,7 +189,7 @@ process_plain_text(
 // See section 3.3.5 of TinyJambu specification
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 template<const variant v>
-static inline void
+static inline constexpr void
 process_cipher_text(
   uint32_t* const __restrict state,       // 128 -bit state
   const uint32_t* const __restrict key,   // {128, 192, 256} -bit secret key
@@ -202,11 +204,11 @@ process_cipher_text(
   while (b_off < ct_len) {
     state[1] ^= FRAMEBITS_CT;
 
-    if (std::is_constant_evaluated() && (v == key_128)) {
+    if (std::is_constant_evaluated() && (v == variant::key_128)) {
       tinyjambu_128::state_update<1024ul>(state, key);
-    } else if (std::is_constant_evaluated() && (v == key_192)) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
       tinyjambu_192::state_update<1152ul>(state, key);
-    } else if (std::is_constant_evaluated() && (v == key_256)) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
       tinyjambu_256::state_update<1280ul>(state, key);
     }
 
@@ -218,7 +220,6 @@ process_cipher_text(
     }
 
     const uint32_t dec = state[2] ^ word;
-
     const uint32_t mask = 0xffffffffu >> ((4ul - take) << 3);
     state[3] ^= (dec & mask);
 
@@ -237,7 +238,7 @@ process_cipher_text(
 // See section 3.3.4 of TinyJambu specification
 // https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/finalist-round/updated-spec-doc/tinyjambu-spec-final.pdf
 template<const variant v>
-static inline void
+static inline constexpr void
 finalize(
   uint32_t* const __restrict state,     // 128 -bit state
   const uint32_t* const __restrict key, // {128, 192, 256} -bit secret key
@@ -246,11 +247,11 @@ finalize(
 {
   state[1] ^= FRAMEBITS_TAG;
 
-  if (std::is_constant_evaluated() && (v == key_128)) {
+  if (std::is_constant_evaluated() && (v == variant::key_128)) {
     tinyjambu_128::state_update<1024ul>(state, key);
-  } else if (std::is_constant_evaluated() && (v == key_192)) {
+  } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
     tinyjambu_192::state_update<1152ul>(state, key);
-  } else if (std::is_constant_evaluated() && (v == key_256)) {
+  } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
     tinyjambu_256::state_update<1280ul>(state, key);
   }
 
@@ -258,11 +259,11 @@ finalize(
 
   state[1] ^= FRAMEBITS_TAG;
 
-  if constexpr (v == key_128) {
+  if constexpr (v == variant::key_128) {
     tinyjambu_128::state_update<640ul>(state, key);
-  } else if constexpr (v == key_192) {
+  } else if constexpr (v == variant::key_192) {
     tinyjambu_192::state_update<640ul>(state, key);
-  } else if constexpr (v == key_256) {
+  } else {
     tinyjambu_256::state_update<640ul>(state, key);
   }
 
