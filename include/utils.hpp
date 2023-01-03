@@ -1,14 +1,13 @@
 #pragma once
+#include <cstddef>
 #include <cstdint>
 #include <iomanip>
 #include <random>
 #include <sstream>
 
-using size_t = std::size_t;
-
 // Given four consecutive little endian bytes, this function interprets them as
 // 32 -bit unsigned integer
-static inline uint32_t
+inline uint32_t
 from_le_bytes(const uint8_t* const bytes)
 {
   return (static_cast<uint32_t>(bytes[3]) << 24) |
@@ -19,7 +18,7 @@ from_le_bytes(const uint8_t* const bytes)
 
 // Given a 32 -bit unsigned interger, this function interprets it as four
 // consecutive little endian bytes
-static inline void
+inline void
 to_le_bytes(const uint32_t word, uint8_t* const bytes)
 {
 #if defined __clang__
@@ -34,7 +33,7 @@ to_le_bytes(const uint32_t word, uint8_t* const bytes)
 }
 
 // Generate N -many random bytes from available random device
-static inline void
+inline void
 random_data(uint8_t* const data, const size_t dt_len)
 {
   std::random_device rd;
@@ -51,7 +50,7 @@ random_data(uint8_t* const data, const size_t dt_len)
 //
 // Taken from
 // https://github.com/itzmeanjan/ascon/blob/6050ca9/include/utils.hpp#L325-L336
-static inline const std::string
+inline const std::string
 to_hex(const uint8_t* const bytes, const size_t len)
 {
   std::stringstream ss;
