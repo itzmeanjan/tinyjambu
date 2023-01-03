@@ -1,3 +1,2 @@
 numpy==1.22.3
 pytest==7.1.2
-google-benchmark==1.6.1
