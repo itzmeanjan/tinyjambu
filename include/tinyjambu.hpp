@@ -66,11 +66,11 @@ initialize(
   std::memset(state, 0, 16);
 
   // key setup
-  if constexpr (v == variant::key_128) {
+  if (std::is_constant_evaluated() && (v == variant::key_128)) {
     tinyjambu_128::state_update<1024ul>(state, key);
-  } else if constexpr (v == variant::key_192) {
+  } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
     tinyjambu_192::state_update<1152ul>(state, key);
-  } else if constexpr (v == variant::key_256) {
+  } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
     tinyjambu_256::state_update<1280ul>(state, key);
   }
 
@@ -78,11 +78,11 @@ initialize(
   for (size_t i = 0; i < 3; i++) {
     state[1] ^= FRAMEBITS_NONCE;
 
-    if constexpr (v == variant::key_128) {
+    if (std::is_constant_evaluated() && (v == variant::key_128)) {
       tinyjambu_128::state_update<640ul>(state, key);
-    } else if constexpr (v == variant::key_192) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
       tinyjambu_192::state_update<640ul>(state, key);
-    } else if constexpr (v == variant::key_256) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
       tinyjambu_256::state_update<640ul>(state, key);
     }
 
@@ -112,11 +112,11 @@ process_associated_data(
   while (b_off < data_len) {
     state[1] ^= FRAMEBITS_AD;
 
-    if constexpr (v == variant::key_128) {
+    if (std::is_constant_evaluated() && (v == variant::key_128)) {
       tinyjambu_128::state_update<640ul>(state, key);
-    } else if constexpr (v == variant::key_192) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
       tinyjambu_192::state_update<640ul>(state, key);
-    } else if constexpr (v == variant::key_256) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
       tinyjambu_256::state_update<640ul>(state, key);
     }
 
@@ -160,11 +160,11 @@ process_plain_text(
   while (b_off < ct_len) {
     state[1] ^= FRAMEBITS_CT;
 
-    if constexpr (v == variant::key_128) {
+    if (std::is_constant_evaluated() && (v == variant::key_128)) {
       tinyjambu_128::state_update<1024ul>(state, key);
-    } else if constexpr (v == variant::key_192) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
       tinyjambu_192::state_update<1152ul>(state, key);
-    } else if constexpr (v == variant::key_256) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
       tinyjambu_256::state_update<1280ul>(state, key);
     }
 
@@ -219,11 +219,11 @@ process_cipher_text(
   while (b_off < ct_len) {
     state[1] ^= FRAMEBITS_CT;
 
-    if constexpr (v == variant::key_128) {
+    if (std::is_constant_evaluated() && (v == variant::key_128)) {
       tinyjambu_128::state_update<1024ul>(state, key);
-    } else if constexpr (v == variant::key_192) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
       tinyjambu_192::state_update<1152ul>(state, key);
-    } else if constexpr (v == variant::key_256) {
+    } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
       tinyjambu_256::state_update<1280ul>(state, key);
     }
 
@@ -272,11 +272,11 @@ finalize(
 {
   state[1] ^= FRAMEBITS_TAG;
 
-  if constexpr (v == variant::key_128) {
+  if (std::is_constant_evaluated() && (v == variant::key_128)) {
     tinyjambu_128::state_update<1024ul>(state, key);
-  } else if constexpr (v == variant::key_192) {
+  } else if (std::is_constant_evaluated() && (v == variant::key_192)) {
     tinyjambu_192::state_update<1152ul>(state, key);
-  } else if constexpr (v == variant::key_256) {
+  } else if (std::is_constant_evaluated() && (v == variant::key_256)) {
     tinyjambu_256::state_update<1280ul>(state, key);
   }
 
@@ -288,7 +288,7 @@ finalize(
     tinyjambu_128::state_update<640ul>(state, key);
   } else if constexpr (v == variant::key_192) {
     tinyjambu_192::state_update<640ul>(state, key);
-  } else if constexpr (v == variant::key_256) {
+  } else {
     tinyjambu_256::state_update<640ul>(state, key);
   }
 
