@@ -98,6 +98,20 @@ decrypt(const uint8_t* const __restrict key,    // 128 -bit secret key
   finalize<variant::key_128>(state, key_, tag_);
 
   bool flag = false;
+
+#if defined __clang__
+  // Following
+  // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
+
+#pragma clang loop unroll(enable)
+#pragma clang loop vectorize(enable)
+#elif defined __GNUG__
+  // Following
+  // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
+
+#pragma GCC ivdep
+#pragma GCC unroll 8
+#endif
   for (size_t i = 0; i < 8; i++) {
     flag |= static_cast<bool>(tag[i] ^ tag_[i]);
   }
