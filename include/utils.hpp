@@ -39,6 +39,9 @@ to_le_bytes(const uint32_t word, uint8_t* const bytes)
 #pragma clang loop unroll(enable)
 #pragma clang loop vectorize(enable)
 #elif defined __GNUG__
+    // Following
+    // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
+
 #pragma GCC ivdep
 #pragma GCC unroll 4
 #endif
