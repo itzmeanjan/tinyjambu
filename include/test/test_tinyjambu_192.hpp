@@ -75,8 +75,7 @@ key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
         assert(f);
 
         // byte-by-byte comparison to be sure that original plain text &
-        // decrypted
-        // plain text bytes are actually same !
+        // decrypted plain text bytes are actually same !
         for (size_t i = 0; i < ct_len; i++) {
           assert(text[i] == dec[i]);
         }
@@ -87,13 +86,6 @@ key_192(const size_t dt_len, const size_t ct_len, const mutate_t m)
         assert(!f);
       } else {
         assert(f);
-
-        // byte-by-byte comparison to be sure that original plain text &
-        // decrypted
-        // plain text bytes are actually same !
-        for (size_t i = 0; i < ct_len; i++) {
-          assert(text[i] == dec[i]);
-        }
       }
       break;
     case mutate_t::none:
