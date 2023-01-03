@@ -1,7 +1,5 @@
 #pragma once
 #include "tinyjambu.hpp"
-#include <cstring>
-#include <type_traits>
 
 // TinyJambu-128 Authenticated Encryption with Associated Data Implementation
 namespace tinyjambu_128 {
@@ -111,6 +109,9 @@ decrypt(const uint8_t* const __restrict key,    // 128 -bit secret key
   for (size_t i = 0; i < 8; i++) {
     flag |= static_cast<bool>(tag[i] ^ tag_[i]);
   }
+
+  // prevent release of unverified plain text ( RUP )
+  std::memset(text, 0, flag * ct_len);
   return !flag;
 }
 

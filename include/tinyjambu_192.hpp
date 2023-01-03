@@ -109,6 +109,9 @@ decrypt(const uint8_t* const __restrict key,    // 192 -bit secret key
   for (size_t i = 0; i < 8; i++) {
     flag |= static_cast<bool>(tag[i] ^ tag_[i]);
   }
+
+  // prevent release of unverified plain text ( RUP )
+  std::memset(text, 0, flag * ct_len);
   return !flag;
 }
 
