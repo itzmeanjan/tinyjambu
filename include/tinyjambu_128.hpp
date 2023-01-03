@@ -9,7 +9,7 @@ namespace tinyjambu_128 {
 // encrypted ) & M -bytes of plain text ( which is encrypted ), producing M
 // -bytes of cipher text & 64 -bit of authentication tag --- providing
 // confidentiality, integrity & authentication
-static inline void
+inline void
 encrypt(const uint8_t* const __restrict key,   // 128 -bit secret key
         const uint8_t* const __restrict nonce, // 96 -bit public message nonce
         const uint8_t* const __restrict data,  // associated data
@@ -36,10 +36,10 @@ encrypt(const uint8_t* const __restrict key,   // 128 -bit secret key
     key_[i] = from_le_bytes(key + (i << 2));
   }
 
-  initialize<key_128>(state, key_, nonce);
-  process_associated_data<key_128>(state, key_, data, data_len);
-  process_plain_text<key_128>(state, key_, text, cipher, ct_len);
-  finalize<key_128>(state, key_, tag);
+  initialize<variant::key_128>(state, key_, nonce);
+  process_associated_data<variant::key_128>(state, key_, data, data_len);
+  process_plain_text<variant::key_128>(state, key_, text, cipher, ct_len);
+  finalize<variant::key_128>(state, key_, tag);
 }
 
 // TinyJambu-128 Verified Decryption, which takes 128 -bit secret key, 96
@@ -50,7 +50,7 @@ encrypt(const uint8_t* const __restrict key,   // 128 -bit secret key
 //
 // Note, if returned boolean verification status is not truth value, don't
 // consume decrypted bytes !
-static inline bool
+inline bool
 decrypt(const uint8_t* const __restrict key,    // 128 -bit secret key
         const uint8_t* const __restrict nonce,  // 96 -bit public message nonce
         const uint8_t* const __restrict tag,    // 64 -bit authentication tag
@@ -78,10 +78,10 @@ decrypt(const uint8_t* const __restrict key,    // 128 -bit secret key
     key_[i] = from_le_bytes(key + (i << 2));
   }
 
-  initialize<key_128>(state, key_, nonce);
-  process_associated_data<key_128>(state, key_, data, data_len);
-  process_cipher_text<key_128>(state, key_, cipher, text, ct_len);
-  finalize<key_128>(state, key_, tag_);
+  initialize<variant::key_128>(state, key_, nonce);
+  process_associated_data<variant::key_128>(state, key_, data, data_len);
+  process_cipher_text<variant::key_128>(state, key_, cipher, text, ct_len);
+  finalize<variant::key_128>(state, key_, tag_);
 
   bool flag = false;
   for (size_t i = 0; i < 8; i++) {
