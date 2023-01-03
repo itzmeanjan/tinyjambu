@@ -9,7 +9,7 @@ namespace test_tinyjambu {
 // Choose which one to modify ( just a single bit flip ), before attempting
 // decryption, to show that TinyJambu-{128, 192, 256} AEAD provides promised
 // security properties
-enum mutate_t
+enum class mutate_t : uint8_t
 {
   key,   // secret key
   nonce, // public message nonce
