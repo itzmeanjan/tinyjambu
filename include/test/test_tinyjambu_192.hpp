@@ -1,5 +1,5 @@
 #pragma once
-#include "test.hpp"
+#include "test_common.hpp"
 #include "tinyjambu_192.hpp"
 #include <cassert>
 
