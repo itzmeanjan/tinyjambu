@@ -26,25 +26,21 @@ encrypt(const uint8_t* const __restrict key,   // 192 -bit secret key
   uint32_t state[4]{};
   uint32_t key_[6]{};
 
-  if constexpr (std::endian::native == std::endian::little) {
-    std::memcpy(key_, key, 24);
-  } else {
 #if defined __clang__
-    // Following
-    // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
+  // Following
+  // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
 
 #pragma clang loop unroll(enable)
 #pragma clang loop vectorize(enable)
 #elif defined __GNUG__
-    // Following
-    // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
+  // Following
+  // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
 
 #pragma GCC ivdep
 #pragma GCC unroll 6
 #endif
-    for (size_t i = 0; i < 6; i++) {
-      key_[i] = from_le_bytes(key + (i << 2));
-    }
+  for (size_t i = 0; i < 6; i++) {
+    key_[i] = from_le_bytes(key + (i << 2));
   }
 
   initialize<variant::key_192>(state, key_, nonce);
@@ -79,25 +75,21 @@ decrypt(const uint8_t* const __restrict key,    // 192 -bit secret key
   uint32_t key_[6]{};
   uint8_t tag_[8]{};
 
-  if constexpr (std::endian::native == std::endian::little) {
-    std::memcpy(key_, key, 24);
-  } else {
 #if defined __clang__
-    // Following
-    // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
+  // Following
+  // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
 
 #pragma clang loop unroll(enable)
 #pragma clang loop vectorize(enable)
 #elif defined __GNUG__
-    // Following
-    // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
+  // Following
+  // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
 
 #pragma GCC ivdep
 #pragma GCC unroll 6
 #endif
-    for (size_t i = 0; i < 6; i++) {
-      key_[i] = from_le_bytes(key + (i << 2));
-    }
+  for (size_t i = 0; i < 6; i++) {
+    key_[i] = from_le_bytes(key + (i << 2));
   }
 
   initialize<variant::key_192>(state, key_, nonce);

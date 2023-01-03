@@ -1,8 +1,6 @@
 #pragma once
-#include <bit>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <iomanip>
 #include <random>
 #include <sstream>
@@ -12,16 +10,10 @@
 inline uint32_t
 from_le_bytes(const uint8_t* const bytes)
 {
-  if constexpr (std::endian::native == std::endian::little) {
-    uint32_t res;
-    std::memcpy(&res, bytes, 4);
-    return res;
-  } else {
-    return (static_cast<uint32_t>(bytes[3]) << 24) |
-           (static_cast<uint32_t>(bytes[2]) << 16) |
-           (static_cast<uint32_t>(bytes[1]) << 8) |
-           (static_cast<uint32_t>(bytes[0]) << 0);
-  }
+  return (static_cast<uint32_t>(bytes[3]) << 24) |
+         (static_cast<uint32_t>(bytes[2]) << 16) |
+         (static_cast<uint32_t>(bytes[1]) << 8) |
+         (static_cast<uint32_t>(bytes[0]) << 0);
 }
 
 // Given a 32 -bit unsigned interger, this function interprets it as four
@@ -29,25 +21,21 @@ from_le_bytes(const uint8_t* const bytes)
 inline void
 to_le_bytes(const uint32_t word, uint8_t* const bytes)
 {
-  if constexpr (std::endian::native == std::endian::little) {
-    std::memcpy(bytes, &word, 4);
-  } else {
 #if defined __clang__
-    // Following
-    // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
+  // Following
+  // https://clang.llvm.org/docs/LanguageExtensions.html#extensions-for-loop-hint-optimizations
 
 #pragma clang loop unroll(enable)
 #pragma clang loop vectorize(enable)
 #elif defined __GNUG__
-    // Following
-    // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
+  // Following
+  // https://gcc.gnu.org/onlinedocs/gcc/Loop-Specific-Pragmas.html#Loop-Specific-Pragmas
 
 #pragma GCC ivdep
 #pragma GCC unroll 4
 #endif
-    for (size_t i = 0; i < 4; i++) {
-      bytes[i] = static_cast<uint8_t>(word >> (i << 3));
-    }
+  for (size_t i = 0; i < 4; i++) {
+    bytes[i] = static_cast<uint8_t>(word >> (i << 3));
   }
 }
 
