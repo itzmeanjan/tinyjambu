@@ -1,7 +1,6 @@
 #pragma once
+#include <cstddef>
 #include <cstdint>
-
-using size_t = std::size_t;
 
 #if defined FBK_32
 #pragma message("Computing 32 feedback bits in-parallel [REQUESTED]")
@@ -49,10 +48,11 @@ template<const size_t rounds>
 static inline void
 state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
              const uint32_t* const __restrict key // 128 -bit secret key
-             ) requires(check_rounds(rounds))
+             )
+  requires(check_rounds(rounds))
 {
 #if defined FBK_32
-  const size_t itr_cnt = rounds >> 5;
+  constexpr size_t itr_cnt = rounds >> 5;
 
   for (size_t i = 0; i < itr_cnt; i++) {
     const uint32_t s47 = (state[2] << 17) | (state[1] >> 15);
@@ -69,7 +69,7 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
     state[3] = fbk;
   }
 #elif defined FBK_128
-  const size_t itr_cnt = rounds >> 7;
+  constexpr size_t itr_cnt = rounds >> 7;
 
   for (size_t i = 0; i < itr_cnt; i++) {
     {
@@ -129,10 +129,11 @@ template<const size_t rounds>
 static inline void
 state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
              const uint32_t* const __restrict key // 192 -bit secret key
-             ) requires(check_rounds(rounds))
+             )
+  requires(check_rounds(rounds))
 {
 #if defined FBK_32
-  const size_t itr_cnt = rounds >> 5;
+  constexpr size_t itr_cnt = rounds >> 5;
 
   for (size_t i = 0; i < itr_cnt; i++) {
     const size_t j = i % 6ul;
@@ -151,7 +152,7 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
     state[3] = fbk;
   }
 #elif defined FBK_128
-  const size_t itr_cnt = rounds >> 7;
+  constexpr size_t itr_cnt = rounds >> 7;
 
   for (size_t i = 0, j = 0; i < itr_cnt; i++) {
     {
@@ -217,10 +218,11 @@ template<const size_t rounds>
 static inline void
 state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
              const uint32_t* const __restrict key // 256 -bit secret key
-             ) requires(check_rounds(rounds))
+             )
+  requires(check_rounds(rounds))
 {
 #if defined FBK_32
-  const size_t itr_cnt = rounds >> 5;
+  constexpr size_t itr_cnt = rounds >> 5;
 
   for (size_t i = 0; i < itr_cnt; i++) {
     const uint32_t s47 = (state[2] << 17) | (state[1] >> 15);
@@ -237,7 +239,7 @@ state_update(uint32_t* const __restrict state,    // 128 -bit permutation state
     state[3] = fbk;
   }
 #elif defined FBK_128
-  const size_t itr_cnt = rounds >> 7;
+  constexpr size_t itr_cnt = rounds >> 7;
 
   for (size_t i = 0, j = 0; i < itr_cnt; i++, j += 4) {
     {
