@@ -4,7 +4,7 @@
 #include <string.h>
 
 // Benchmark TinyJambu-192 authenticated encryption routine
-static void
+void
 tinyjambu_192_encrypt(benchmark::State& state)
 {
   const size_t ct_len = state.range(0);
@@ -35,6 +35,7 @@ tinyjambu_192_encrypt(benchmark::State& state)
 
     benchmark::DoNotOptimize(enc);
     benchmark::DoNotOptimize(tag);
+    benchmark::ClobberMemory();
   }
 
   const size_t per_itr_data = dt_len + ct_len;
@@ -52,7 +53,7 @@ tinyjambu_192_encrypt(benchmark::State& state)
 }
 
 // Benchmark TinyJambu-192 verified decryption routine
-static void
+void
 tinyjambu_192_decrypt(benchmark::State& state)
 {
   const size_t ct_len = state.range(0);
@@ -88,6 +89,7 @@ tinyjambu_192_decrypt(benchmark::State& state)
 
     DoNotOptimize(decrypt(key, nonce, tag, data, dt_len, enc, dec, ct_len));
     DoNotOptimize(dec);
+    benchmark::ClobberMemory();
   }
 
   const size_t per_itr_data = dt_len + ct_len;
