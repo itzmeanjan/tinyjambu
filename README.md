@@ -129,7 +129,7 @@ Find micro-benchmarking ( using `google-benchmark` ) results [here](./bench/READ
 I've written following example programs which demonstrate use of TinyJambu-{128, 192, 256} C++ API
 
 - [TinyJambu-128](./example/tinyjambu_128.cpp)
-- [TinyJambu-193](./example/tinyjambu_192.cpp)
+- [TinyJambu-192](./example/tinyjambu_192.cpp)
 - [TinyJambu-256](./example/tinyjambu_256.cpp)
 
 You may also want to use Python API of `tinyjambu`, consider checking [here](https://github.com/itzmeanjan/tinyjambu/blob/1082f55/wrapper/python/example.py) for usage example.
