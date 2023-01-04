@@ -24,7 +24,14 @@ encrypt(const uint8_t* const __restrict key,   // 128 -bit secret key
 
   // note permutation state must be zero initialized !
   uint32_t state[4]{};
-  uint32_t key_[4]{};
+  uint32_t key_[4];
+
+#if defined __x86_64__ && !defined __clang__ && defined __GNUG__ &&            \
+  __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+  std::memcpy(key_, key, 16);
+
+#else
 
 #if defined __clang__
   // Following
@@ -42,6 +49,8 @@ encrypt(const uint8_t* const __restrict key,   // 128 -bit secret key
   for (size_t i = 0; i < 4; i++) {
     key_[i] = from_le_bytes(key + (i << 2));
   }
+
+#endif
 
   initialize<variant::key_128>(state, key_, nonce);
   process_associated_data<variant::key_128>(state, key_, data, data_len);
@@ -72,8 +81,15 @@ decrypt(const uint8_t* const __restrict key,    // 128 -bit secret key
 
   // note permutation state must be zero initialized !
   uint32_t state[4]{};
-  uint32_t key_[4]{};
+  uint32_t key_[4];
   uint8_t tag_[8]{};
+
+#if defined __x86_64__ && !defined __clang__ && defined __GNUG__ &&            \
+  __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+  std::memcpy(key_, key, 16);
+
+#else
 
 #if defined __clang__
   // Following
@@ -91,6 +107,8 @@ decrypt(const uint8_t* const __restrict key,    // 128 -bit secret key
   for (size_t i = 0; i < 4; i++) {
     key_[i] = from_le_bytes(key + (i << 2));
   }
+
+#endif
 
   initialize<variant::key_128>(state, key_, nonce);
   process_associated_data<variant::key_128>(state, key_, data, data_len);

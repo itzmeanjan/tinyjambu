@@ -194,60 +194,60 @@ tinyjambu_256_decrypt/4096/32       5477 ns         5476 ns       127790 bytes_p
 ### On Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz ( compiled using GCC )
 
 ```bash
-2023-01-03T18:41:15+00:00
+2023-01-04T09:11:14+00:00
 Running ./bench/a.out
-Run on (128 X 1261.36 MHz CPU s)
+Run on (128 X 1278.06 MHz CPU s)
 CPU Caches:
   L1 Data 48 KiB (x64)
   L1 Instruction 32 KiB (x64)
   L2 Unified 1280 KiB (x64)
   L3 Unified 55296 KiB (x2)
-Load Average: 0.32, 0.09, 0.03
+Load Average: 0.00, 0.08, 0.05
 ----------------------------------------------------------------------------------------
 Benchmark                              Time             CPU   Iterations UserCounters...
 ----------------------------------------------------------------------------------------
-tinyjambu_128_encrypt/64/32         83.4 ns         83.4 ns      8394527 bytes_per_second=1098.24M/s
-tinyjambu_128_decrypt/64/32         88.5 ns         88.5 ns      7884714 bytes_per_second=1034.54M/s
-tinyjambu_128_encrypt/128/32         109 ns          109 ns      6392854 bytes_per_second=1.36459G/s
-tinyjambu_128_decrypt/128/32         116 ns          116 ns      6070254 bytes_per_second=1.28906G/s
-tinyjambu_128_encrypt/256/32         162 ns          162 ns      4331509 bytes_per_second=1.65479G/s
-tinyjambu_128_decrypt/256/32         171 ns          171 ns      4107331 bytes_per_second=1.57135G/s
-tinyjambu_128_encrypt/512/32         267 ns          267 ns      2621591 bytes_per_second=1.89727G/s
-tinyjambu_128_decrypt/512/32         291 ns          291 ns      2400346 bytes_per_second=1.73981G/s
-tinyjambu_128_encrypt/1024/32        488 ns          488 ns      1431805 bytes_per_second=2.01655G/s
-tinyjambu_128_decrypt/1024/32        505 ns          505 ns      1385783 bytes_per_second=1.94586G/s
-tinyjambu_128_encrypt/2048/32        904 ns          904 ns       773544 bytes_per_second=2.142G/s
-tinyjambu_128_decrypt/2048/32        945 ns          945 ns       741207 bytes_per_second=2.05082G/s
-tinyjambu_128_encrypt/4096/32       1778 ns         1778 ns       393233 bytes_per_second=2.16181G/s
-tinyjambu_128_decrypt/4096/32       1842 ns         1842 ns       379701 bytes_per_second=2.08688G/s
-tinyjambu_192_encrypt/64/32         87.9 ns         87.9 ns      7967523 bytes_per_second=1041.86M/s
-tinyjambu_192_decrypt/64/32         91.6 ns         91.6 ns      7635884 bytes_per_second=999.032M/s
-tinyjambu_192_encrypt/128/32         113 ns          113 ns      6193001 bytes_per_second=1.31773G/s
-tinyjambu_192_decrypt/128/32         119 ns          119 ns      5886398 bytes_per_second=1.25386G/s
-tinyjambu_192_encrypt/256/32         164 ns          164 ns      4262440 bytes_per_second=1.63352G/s
-tinyjambu_192_decrypt/256/32         174 ns          174 ns      4029690 bytes_per_second=1.54392G/s
-tinyjambu_192_encrypt/512/32         267 ns          267 ns      2626044 bytes_per_second=1.90058G/s
-tinyjambu_192_decrypt/512/32         290 ns          290 ns      2410317 bytes_per_second=1.74544G/s
-tinyjambu_192_encrypt/1024/32        479 ns          479 ns      1463044 bytes_per_second=2.05495G/s
-tinyjambu_192_decrypt/1024/32        510 ns          510 ns      1373501 bytes_per_second=1.92922G/s
-tinyjambu_192_encrypt/2048/32        888 ns          888 ns       788271 bytes_per_second=2.18144G/s
-tinyjambu_192_decrypt/2048/32        949 ns          949 ns       737954 bytes_per_second=2.0413G/s
-tinyjambu_192_encrypt/4096/32       1741 ns         1741 ns       402041 bytes_per_second=2.20816G/s
-tinyjambu_192_decrypt/4096/32       1829 ns         1829 ns       382602 bytes_per_second=2.1016G/s
-tinyjambu_256_encrypt/64/32         84.0 ns         84.0 ns      8336015 bytes_per_second=1090.31M/s
-tinyjambu_256_decrypt/64/32         89.3 ns         89.3 ns      7834471 bytes_per_second=1025.66M/s
-tinyjambu_256_encrypt/128/32         109 ns          109 ns      6441645 bytes_per_second=1.36997G/s
-tinyjambu_256_decrypt/128/32         116 ns          116 ns      6030520 bytes_per_second=1.28316G/s
-tinyjambu_256_encrypt/256/32         160 ns          160 ns      4391421 bytes_per_second=1.67742G/s
-tinyjambu_256_decrypt/256/32         171 ns          171 ns      4097783 bytes_per_second=1.56993G/s
-tinyjambu_256_encrypt/512/32         262 ns          262 ns      2675348 bytes_per_second=1.93579G/s
-tinyjambu_256_decrypt/512/32         287 ns          287 ns      2433259 bytes_per_second=1.76306G/s
-tinyjambu_256_encrypt/1024/32        473 ns          473 ns      1480701 bytes_per_second=2.08076G/s
-tinyjambu_256_decrypt/1024/32        505 ns          505 ns      1385058 bytes_per_second=1.94578G/s
-tinyjambu_256_encrypt/2048/32        882 ns          882 ns       793800 bytes_per_second=2.19674G/s
-tinyjambu_256_decrypt/2048/32        944 ns          944 ns       741266 bytes_per_second=2.05106G/s
-tinyjambu_256_encrypt/4096/32       1735 ns         1735 ns       403539 bytes_per_second=2.21558G/s
-tinyjambu_256_decrypt/4096/32       1826 ns         1826 ns       383363 bytes_per_second=2.10531G/s
+tinyjambu_128_encrypt/64/32         70.6 ns         70.6 ns      9883551 bytes_per_second=1.26621G/s
+tinyjambu_128_decrypt/64/32         73.0 ns         73.0 ns      9546107 bytes_per_second=1.22427G/s
+tinyjambu_128_encrypt/128/32        84.4 ns         84.4 ns      8290862 bytes_per_second=1.76513G/s
+tinyjambu_128_decrypt/128/32        86.9 ns         86.9 ns      8090670 bytes_per_second=1.71385G/s
+tinyjambu_128_encrypt/256/32         112 ns          112 ns      6261539 bytes_per_second=2.39793G/s
+tinyjambu_128_decrypt/256/32         114 ns          114 ns      6185791 bytes_per_second=2.34748G/s
+tinyjambu_128_encrypt/512/32         169 ns          169 ns      4121005 bytes_per_second=2.99792G/s
+tinyjambu_128_decrypt/512/32         169 ns          169 ns      4111935 bytes_per_second=2.9954G/s
+tinyjambu_128_encrypt/1024/32        279 ns          279 ns      2457254 bytes_per_second=3.52728G/s
+tinyjambu_128_decrypt/1024/32        282 ns          282 ns      2484825 bytes_per_second=3.48927G/s
+tinyjambu_128_encrypt/2048/32        499 ns          499 ns      1403247 bytes_per_second=3.88431G/s
+tinyjambu_128_decrypt/2048/32        501 ns          501 ns      1396285 bytes_per_second=3.8676G/s
+tinyjambu_128_encrypt/4096/32        937 ns          937 ns       746679 bytes_per_second=4.1027G/s
+tinyjambu_128_decrypt/4096/32        941 ns          941 ns       744378 bytes_per_second=4.08615G/s
+tinyjambu_192_encrypt/64/32         74.4 ns         74.4 ns      9417197 bytes_per_second=1.20239G/s
+tinyjambu_192_decrypt/64/32         78.2 ns         78.2 ns      8934563 bytes_per_second=1.1436G/s
+tinyjambu_192_encrypt/128/32        88.2 ns         88.2 ns      7949014 bytes_per_second=1.6903G/s
+tinyjambu_192_decrypt/128/32        91.9 ns         91.9 ns      7642894 bytes_per_second=1.62152G/s
+tinyjambu_192_encrypt/256/32         116 ns          116 ns      6049242 bytes_per_second=2.32004G/s
+tinyjambu_192_decrypt/256/32         119 ns          119 ns      5866823 bytes_per_second=2.25222G/s
+tinyjambu_192_encrypt/512/32         171 ns          171 ns      4090329 bytes_per_second=2.96853G/s
+tinyjambu_192_decrypt/512/32         174 ns          174 ns      4024336 bytes_per_second=2.91095G/s
+tinyjambu_192_encrypt/1024/32        285 ns          285 ns      2404274 bytes_per_second=3.44831G/s
+tinyjambu_192_decrypt/1024/32        288 ns          288 ns      2427876 bytes_per_second=3.40924G/s
+tinyjambu_192_encrypt/2048/32        505 ns          505 ns      1385846 bytes_per_second=3.8367G/s
+tinyjambu_192_decrypt/2048/32        508 ns          508 ns      1378267 bytes_per_second=3.81386G/s
+tinyjambu_192_encrypt/4096/32        945 ns          945 ns       741082 bytes_per_second=4.06969G/s
+tinyjambu_192_decrypt/4096/32        948 ns          948 ns       738023 bytes_per_second=4.05478G/s
+tinyjambu_256_encrypt/64/32         65.1 ns         65.1 ns     10762741 bytes_per_second=1.37312G/s
+tinyjambu_256_decrypt/64/32         72.6 ns         72.6 ns      9624091 bytes_per_second=1.23201G/s
+tinyjambu_256_encrypt/128/32        79.0 ns         79.0 ns      8856438 bytes_per_second=1.88568G/s
+tinyjambu_256_decrypt/128/32        86.7 ns         86.7 ns      8072552 bytes_per_second=1.71808G/s
+tinyjambu_256_encrypt/256/32         106 ns          106 ns      6576741 bytes_per_second=2.52153G/s
+tinyjambu_256_decrypt/256/32         114 ns          114 ns      6146058 bytes_per_second=2.35076G/s
+tinyjambu_256_encrypt/512/32         161 ns          161 ns      4315326 bytes_per_second=3.14194G/s
+tinyjambu_256_decrypt/512/32         169 ns          169 ns      4151232 bytes_per_second=2.99119G/s
+tinyjambu_256_encrypt/1024/32        277 ns          277 ns      2482583 bytes_per_second=3.55619G/s
+tinyjambu_256_decrypt/1024/32        282 ns          282 ns      2489667 bytes_per_second=3.49127G/s
+tinyjambu_256_encrypt/2048/32        496 ns          496 ns      1411474 bytes_per_second=3.90607G/s
+tinyjambu_256_decrypt/2048/32        500 ns          500 ns      1401341 bytes_per_second=3.87292G/s
+tinyjambu_256_encrypt/4096/32        935 ns          935 ns       748546 bytes_per_second=4.11307G/s
+tinyjambu_256_decrypt/4096/32        941 ns          941 ns       743633 bytes_per_second=4.08723G/s
 ```
 
 ### On Intel(R) Xeon(R) Platinum 8375C CPU @ 2.90GHz ( compiled using Clang )

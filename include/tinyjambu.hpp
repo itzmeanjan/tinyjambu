@@ -123,9 +123,19 @@ process_associated_data(
     const size_t take = std::min(4ul, data_len - b_off);
 
     uint32_t word = 0u;
+
+#if defined __x86_64__ && !defined __clang__ && defined __GNUG__ &&            \
+  __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+    std::memcpy(&word, data + b_off, take);
+
+#else
+
     for (size_t i = 0; i < take; i++) {
       word |= static_cast<uint32_t>(data[b_off + i]) << (i << 3);
     }
+
+#endif
 
     state[3] ^= word;
     b_off += take;
@@ -166,16 +176,35 @@ process_plain_text(
     const size_t take = std::min(4ul, ct_len - b_off);
 
     uint32_t word = 0u;
+
+#if defined __x86_64__ && !defined __clang__ && defined __GNUG__ &&            \
+  __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+    std::memcpy(&word, text + b_off, take);
+
+#else
+
     for (size_t i = 0; i < take; i++) {
       word |= static_cast<uint32_t>(text[b_off + i]) << (i << 3);
     }
 
-    state[3] ^= word;
+#endif
 
+    state[3] ^= word;
     const uint32_t enc = state[2] ^ word;
+
+#if defined __x86_64__ && !defined __clang__ && defined __GNUG__ &&            \
+  __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+    std::memcpy(cipher + b_off, &enc, take);
+
+#else
+
     for (size_t i = 0; i < take; i++) {
       cipher[b_off + i] = static_cast<uint8_t>(enc >> (i << 3));
     }
+
+#endif
 
     b_off += take;
   }
@@ -215,17 +244,36 @@ process_cipher_text(
     const size_t take = std::min(4ul, ct_len - b_off);
 
     uint32_t word = 0u;
+
+#if defined __x86_64__ && !defined __clang__ && defined __GNUG__ &&            \
+  __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+    std::memcpy(&word, cipher + b_off, take);
+
+#else
+
     for (size_t i = 0; i < take; i++) {
       word |= static_cast<uint32_t>(cipher[b_off + i]) << (i << 3);
     }
+
+#endif
 
     const uint32_t dec = state[2] ^ word;
     const uint32_t mask = 0xffffffffu >> ((4ul - take) << 3);
     state[3] ^= (dec & mask);
 
+#if defined __x86_64__ && !defined __clang__ && defined __GNUG__ &&            \
+  __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+
+    std::memcpy(text + b_off, &dec, take);
+
+#else
+
     for (size_t i = 0; i < take; i++) {
       text[b_off + i] = static_cast<uint8_t>(dec >> (i << 3));
     }
+
+#endif
 
     b_off += take;
   }
