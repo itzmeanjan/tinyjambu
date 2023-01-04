@@ -9,7 +9,11 @@ IFLAGS = -I ./include
 #
 # or
 #
-# `FBK=128 make` // computes 128 feedback bits in-parallel
+# `FBK=64 make` // computes 64 feedback bits per iteration
+#
+# or
+#
+# `FBK=128 make` // computes 128 feedback bits per iteration
 #
 # Note :
 #
