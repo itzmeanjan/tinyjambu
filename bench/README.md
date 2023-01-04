@@ -5,12 +5,14 @@ For benchmarking TinyJambu-{128, 192, 256} authenticated encryption/ verified de
 ```bash
 FBK=32 make benchmark
 # or
+FBK=64 make benchmark
+# or
 FBK=128 make benchmark
 ```
 
 > **Warning** Because most of the CPUs employ dynamic frequency boosting technique, when benchmarking, you should disable CPU frequency scaling by following [this](https://github.com/google/benchmark/blob/60b16f1/docs/user_guide.md#disabling-cpu-frequency-scaling) guide.
 
-> **Note** Following benchmark results were collected by issuing `make benchmark` i.e. which by default computes 32 feedback bits in parallel. One may also wish to benchmark by issuing `FBK=128 make benchmark`, which computes 128 feedback bits per iteration.
+> **Note** Following benchmark results were collected by issuing `make benchmark` i.e. which by default computes 32 feedback bits in parallel. One may also wish to benchmark by issuing `FBK={64,128} make benchmark`, which computes {64, 128} feedback bits per iteration.
 
 ### On Intel(R) Core(TM) i5-8279U CPU @ 2.40GHz ( compiled using Clang )
 

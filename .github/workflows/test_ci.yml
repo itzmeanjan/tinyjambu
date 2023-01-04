@@ -21,9 +21,7 @@ jobs:
       run: python3 -m pip install -r wrapper/python/requirements.txt --user
     - name: Execute Tests ( 32 feedback bits in parallel )
       run: FBK=32 make
-    - name: Cleanup
-      run: make clean
+    - name: Execute Tests ( 64 feedback bits in parallel )
+      run: FBK=64 make
     - name: Execute Tests ( 128 feedback bits in parallel )
       run: FBK=128 make
-    - name: Cleanup
-      run: make clean

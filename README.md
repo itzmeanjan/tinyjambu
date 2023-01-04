@@ -112,6 +112,7 @@ Issue following command(s) to run test cases on all variants of TinyJambu
 
 ```bash
 FBK=32 make   # 32 feedback bits in-parallel
+FBK=64 make   # 2x32 feedback bits per iteration
 FBK=128 make  # 4x32 feedback bits per iteration
 ```
 
@@ -127,8 +128,8 @@ Find micro-benchmarking ( using `google-benchmark` ) results [here](./bench/READ
 
 I've written following example programs which demonstrate use of TinyJambu-{128, 192, 256} C++ API
 
-- [TinyJambu-128](https://github.com/itzmeanjan/tinyjambu/blob/dc631cd/example/tinyjambu_128.cpp)
-- [TinyJambu-193](https://github.com/itzmeanjan/tinyjambu/blob/dc631cd/example/tinyjambu_193.cpp)
-- [TinyJambu-256](https://github.com/itzmeanjan/tinyjambu/blob/dc631cd/example/tinyjambu_256.cpp)
+- [TinyJambu-128](./example/tinyjambu_128.cpp)
+- [TinyJambu-193](./example/tinyjambu_192.cpp)
+- [TinyJambu-256](./example/tinyjambu_256.cpp)
 
 You may also want to use Python API of `tinyjambu`, consider checking [here](https://github.com/itzmeanjan/tinyjambu/blob/1082f55/wrapper/python/example.py) for usage example.
